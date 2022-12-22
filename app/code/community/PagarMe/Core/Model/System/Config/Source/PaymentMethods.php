@@ -11,7 +11,7 @@ class PagarMe_Core_Model_System_Config_Source_PaymentMethods
     {
         return [
             [
-                'value' => 'pagarme_bowleto',
+                'value' => 'pagarme_boleto',
                 'label' => Mage::helper('pagarme_core')->__('Boleto Only')
             ],
             [
@@ -19,7 +19,7 @@ class PagarMe_Core_Model_System_Config_Source_PaymentMethods
                 'label' => Mage::helper('pagarme_core')->__('Credit Card Only')
             ],
             [
-                'value' => 'pagarme_creditcard,pagarme_bowleto',
+                'value' => 'pagarme_creditcard,pagarme_boleto',
                 'label' => Mage::helper('pagarme_core')->__(
                     'Boleto and Credit Card'
                 )

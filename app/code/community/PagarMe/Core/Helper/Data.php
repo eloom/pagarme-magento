@@ -18,6 +18,7 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
                 $data['pagarme_modal_customer_document_number'],
                 'Digits'
             ),
+            'type' => $data['pagarme_modal_customer_type'],
             'document_type' => $data['pagarme_modal_customer_document_type'],
             'name' => $data['pagarme_modal_customer_name'],
             'email' => $data['pagarme_modal_customer_email'],
@@ -111,19 +112,33 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @param Mage_Sales_Model_Quote $quote
+     * @param string $quote
      *
      * @return string
      */
-    public function getDocumentType($quote)
+    public function getDocumentType($taxVat)
     {
-        $documentNumber = $quote->getCustomerTaxvat();
-
+        $documentNumber = preg_replace('/\D/', '', $taxVat);
         if(strlen($documentNumber) == 11) {
             return 'cpf';
         }
 
         return 'cnpj';
+    }
+
+    /**
+     * @param string $quote
+     *
+     * @return string
+     */
+    public function getCustomerType($taxVat)
+    {
+        $documentNumber = preg_replace('/\D/', '', $taxVat);
+        if(strlen($documentNumber) == 11) {
+            return 'individual';
+        }
+
+        return 'corporation';
     }
 
     /**

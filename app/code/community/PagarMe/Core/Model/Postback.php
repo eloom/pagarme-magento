@@ -1,7 +1,5 @@
 <?php
 
-use PagarMe_Core_Model_PostbackHandler_Factory as PostbackHandlerFactory;
-
 class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
 {
     const POSTBACK_STATUS_PAID = 'paid';
@@ -110,7 +108,7 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
         $order = $this->getOrderService()
             ->getOrderByTransactionId($transactionId);
 
-        $postbackHandler = PostbackHandlerFactory::createFromDesiredStatus(
+        $postbackHandler = PagarMe_Core_Model_PostbackHandler_Factory::createFromDesiredStatus(
             $currentStatus,
             $oldStatus,
             $order,

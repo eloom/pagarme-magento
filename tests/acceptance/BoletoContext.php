@@ -103,7 +103,7 @@ class BoletoContext extends PagarMeMagentoContext
     {
         $page = $this->session->getPage();
         $this->waitForElement('#checkout-step-payment', 5500);
-        $page->find('css', '#p_method_pagarme_bowleto')->click();
+        $page->find('css', '#p_method_pagarme_boleto')->click();
     }
     /**
      * @When I confirm my payment information
@@ -124,7 +124,7 @@ class BoletoContext extends PagarMeMagentoContext
         $this->session
             ->getPage()
             ->pressButton(
-                Mage::helper('pagarme_bowleto')
+                Mage::helper('pagarme_boleto')
                 ->__('Place Order')
             );
         $this->session->wait(15000);
@@ -144,7 +144,7 @@ class BoletoContext extends PagarMeMagentoContext
         \PHPUnit_Framework_TestCase::assertEquals(
             strtolower(
                 Mage::helper(
-                    'pagarme_bowleto'
+                    'pagarme_boleto'
                 )->__('Your order has been received.')
             ),
             strtolower($successMessage)
@@ -165,7 +165,7 @@ class BoletoContext extends PagarMeMagentoContext
     {
         $page = $this->session->getPage();
         \PHPUnit_Framework_TestCase::assertContains(
-            Mage::helper('pagarme_bowleto')->__('Click the followed link to print your boleto'),
+            Mage::helper('pagarme_boleto')->__('Click the followed link to print your boleto'),
             $page->find(
                 'css',
                 '.pagarme_boleto_info_boleto'
@@ -223,7 +223,7 @@ class BoletoContext extends PagarMeMagentoContext
      * @Then cancel orders with expired boletos by cron job model
      */
     public function cancelOrdersWithExpiredBoletosByCronJobModel() {
-        $unpaidBoletos = new PagarMe_Bowleto_Model_UnpaidBoleto();
+        $unpaidBoletos = new PagarMe_Boleto_Model_UnpaidBoleto();
 
         $unpaidBoletos->cancel();
     }

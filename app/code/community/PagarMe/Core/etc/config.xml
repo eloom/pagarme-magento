@@ -115,16 +115,16 @@
                 <payment_action>authorize</payment_action>
                 <group>pagarmev2</group>
             </pagarme_creditcard>
-            <pagarme_bowleto>
+            <pagarme_boleto>
                 <active>1</active>
                 <title>Pagar.me Boleto</title>
-                <model>pagarme_bowleto/boleto</model>
+                <model>pagarme_boleto/boleto</model>
                 <order_status>authorize</order_status>
                 <allowspecific>0</allowspecific>
                 <payment_methods>boleto</payment_methods>
                 <payment_action>authorize</payment_action>
                 <group>pagarmev2</group>
-            </pagarme_bowleto>
+            </pagarme_boleto>
             <pagarme_configurations>
                 <modal_title>Pagarme Checkout</modal_title>
                 <modal_button_text>Realizar pagamento</modal_button_text>

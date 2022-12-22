@@ -16,8 +16,8 @@
         }
     },
     "require": {
-        "php": ">=5.4",
-        "pagarme/pagarme-php": "^3.8",
+        "php": "~7.3",
+        "pagarme/pagarme-php": "^3.9",
         "guzzlehttp/guzzle": "^5.3"
     },
     "require-dev": {
@@ -36,7 +36,10 @@
             ["app/design/adminhtml/default/default/template/pagarme/*", "app/design/adminhtml/default/default/template/pagarme/"],
             ["app/design/frontend/base/default/layout/pagarme/*", "app/design/frontend/base/default/layout/pagarme/"],
             ["app/design/frontend/base/default/template/pagarme/*", "app/design/frontend/base/default/template/pagarme/"],
-            ["app/etc/modules/PagarMe_Bowleto.xml", "app/etc/modules/PagarMe_Bowleto.xml"],
+            [
+                "app/etc/modules/PagarMe_Boleto.xml",
+                "app/etc/modules/PagarMe_Boleto.xml"
+            ],
             ["app/etc/modules/PagarMe_Core.xml", "app/etc/modules/PagarMe_Core.xml"],
             ["app/etc/modules/PagarMe_CreditCard.xml", "app/etc/modules/PagarMe_CreditCard.xml"],
             ["app/etc/modules/PagarMe_Modal.xml", "app/etc/modules/PagarMe_Modal.xml"],

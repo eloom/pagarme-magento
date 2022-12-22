@@ -1,5 +1,5 @@
 <?php
-class PagarMe_Bowleto_Block_Form_Boleto extends Mage_Payment_Block_Form
+class PagarMe_Boleto_Block_Form_Boleto extends Mage_Payment_Block_Form
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
     const TEMPLATE = 'pagarme/form/boleto.phtml';

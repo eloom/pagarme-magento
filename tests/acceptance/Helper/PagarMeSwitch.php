@@ -29,7 +29,7 @@ trait PagarMeSwitch
 
         $this->changePagarmeSetting(
             'payment/pagarme_configurations/transparent_payment_methods',
-            'pagarme_bowleto,pagarme_creditcard'
+            'pagarme_boleto,pagarme_creditcard'
         );
     }
 

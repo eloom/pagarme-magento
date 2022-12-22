@@ -7,7 +7,7 @@
 use PagarMe\Sdk\Card\Card;
 use PagarMe\Sdk\Transaction\AbstractTransaction;
 use PagarMe\Sdk\Transaction\BoletoTransaction;
-use PagarMe_Bowleto_Model_Boleto as ModelBoleto;
+use PagarMe_Boleto_Model_Boleto as ModelBoleto;
 
 class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
 {
@@ -17,7 +17,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
     public function mustReturnFalseIfCheckoutTransparentIsInactive()
     {
         $boletoModel = $this
-            ->getMockBuilder('PagarMe_Bowleto_Model_Boleto')
+            ->getMockBuilder('PagarMe_Boleto_Model_Boleto')
             ->setMethods([
                 'isTransparentCheckoutActive',
                 'getActiveTransparentPaymentMethod'
@@ -41,7 +41,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
     public function mustReturnTrueIfBoletoIsEnabled()
     {
         $boletoModel = $this
-            ->getMockBuilder('PagarMe_Bowleto_Model_Boleto')
+            ->getMockBuilder('PagarMe_Boleto_Model_Boleto')
             ->setMethods([
                 'isTransparentCheckoutActive',
                 'getActiveTransparentPaymentMethod'
@@ -56,7 +56,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
         $boletoModel
             ->expects($this->any())
             ->method('getActiveTransparentPaymentMethod')
-            ->willReturn('pagarme_bowleto');
+            ->willReturn('pagarme_boleto');
 
         $this->assertTrue($boletoModel->isAvailable());
     }
@@ -67,7 +67,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
     public function mustReturnFalseIfBoletoIsDisabled()
     {
         $boletoModel = $this
-            ->getMockBuilder('PagarMe_Bowleto_Model_Boleto')
+            ->getMockBuilder('PagarMe_Boleto_Model_Boleto')
             ->setMethods([
                 'isTransparentCheckoutActive',
                 'getActiveTransparentPaymentMethod'
@@ -93,7 +93,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
     public function mustReturnTrueIfCreditCardAndBoletoIsEnabled()
     {
         $boletoModel = $this
-            ->getMockBuilder('PagarMe_Bowleto_Model_Boleto')
+            ->getMockBuilder('PagarMe_Boleto_Model_Boleto')
             ->setMethods([
                 'isTransparentCheckoutActive',
                 'getActiveTransparentPaymentMethod'
@@ -108,7 +108,7 @@ class PagarMeboletoModelBoletoTest extends PHPUnit_Framework_TestCase
         $boletoModel
             ->expects($this->any())
             ->method('getActiveTransparentPaymentMethod')
-            ->willReturn('pagarme_creditcard,pagarme_bowleto');
+            ->willReturn('pagarme_creditcard,pagarme_boleto');
 
         $this->assertTrue($boletoModel->isAvailable());
     }

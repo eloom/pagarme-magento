@@ -3,13 +3,13 @@
     <default>
       <reference name="head">
             <action method="addCss">
-              <stylesheet>pagarme/magneto/css/styles.css</stylesheet>
+              <stylesheet>pagarme/css/styles.css</stylesheet>
             </action>
         </reference>
     </default>
    <checkout_onepage_success>
-        <reference name="content">
-          <block type="pagarme_bowleto/success" name="pagarme_bowleto.success" template="pagarme/boleto/success.phtml"/>
+        <reference name="checkout.success">
+          <block type="pagarme_boleto/success" name="pagarme_boleto.success" template="pagarme/boleto/success.phtml"/>
         </reference>
     </checkout_onepage_success>   
 </layout>

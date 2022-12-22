@@ -1,9 +1,17 @@
 <?php
 
-use PagarMe_Core_Model_PostbackHandler_Exception as PostbackHandlerException;
+class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controller_Front_Action {
 
-abstract class PagarMe_Core_Transaction_AbstractPostbackController extends Mage_Core_Controller_Front_Action
-{
+    private $logger;
+
+    /**
+     * Initialize resource model
+     */
+    protected function _construct() {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
+        parent::_construct();
+    }
+
     /**
      * @return Zend_Controller_Response_Abstract
      * @throws Zend_Controller_Response_Exception
@@ -20,9 +28,13 @@ abstract class PagarMe_Core_Transaction_AbstractPostbackController extends Mage_
             return $this->getResponse()->setHttpResponseCode(400);
         }
 
-        $transactionId = $request->getPost('id');
-        $currentStatus = $request->getPost('current_status');
-        $oldStatus = $request->getPost('old_status');
+        $data = $this->getRequest()->getPost();
+
+        $this->logger->info(sprintf("Processando notificação. Pedido [%s] - Status [%s].", $data['id'], $data['current_status']));
+
+        $transactionId = $data['id'];
+        $currentStatus = $data['current_status'];
+        $oldStatus = $data['old_status'];
 
         try {
             Mage::getModel('pagarme_core/postback')
@@ -33,16 +45,22 @@ abstract class PagarMe_Core_Transaction_AbstractPostbackController extends Mage_
                 );
             return $this->getResponse()
                 ->setBody('ok');
-        } catch (PostbackHandlerException $postbackException) {
+        } catch (PagarMe_Core_Model_PostbackHandler_Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+            //$this->logger->fatal($e->getTraceAsString());
+
             return $this
                 ->getResponse()
                 ->setHttpResponseCode(200)
-                ->setBody($postbackException->getMessage());
-        } catch (Exception $exception) {
+                ->setBody($e->getMessage());
+        } catch (Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+            //$this->logger->fatal($e->getTraceAsString());
+
             return $this
                 ->getResponse()
                 ->setHttpResponseCode(500)
-                ->setBody($exception->getMessage());
+                ->setBody($e->getMessage());
         }
     }
 

@@ -1,13 +1,13 @@
 <?php
 use \PagarMe\Sdk\PagarMe as PagarMeSdk;
 
-class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMethod
+class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMethod
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    protected $_code = 'pagarme_bowleto';
-    protected $_formBlockType = 'pagarme_bowleto/form_boleto';
-    protected $_infoBlockType = 'pagarme_bowleto/info_boleto';
+    protected $_code = 'pagarme_boleto';
+    protected $_formBlockType = 'pagarme_boleto/form_boleto';
+    protected $_infoBlockType = 'pagarme_boleto/info_boleto';
     protected $_isGateway = true;
     protected $_canAuthorize = true;
     protected $_canCapture = true;
@@ -16,8 +16,8 @@ class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMet
     protected $_canManageRecurringProfiles = true;
     protected $_isInitializeNeeded = true;
 
-    const PAGARME_BOLETO = 'pagarme_bowleto';
-    const POSTBACK_ENDPOINT = 'transaction_boleto';
+    const PAGARME_BOLETO = 'pagarme_boleto';
+    const POSTBACK_ENDPOINT = 'transaction_notification';
 
     /**
      * @var \PagarMe\Sdk\PagarMe
@@ -115,6 +115,9 @@ class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMet
     public function createTransaction(
         \PagarMe\Sdk\Customer\Customer $customer
     ) {
+        $payment = $this->getInfoInstance();
+        $postbackUrl = $this->getUrlForPostback();
+
         $quote = Mage::getSingleton('checkout/session')->getQuote();
         $this->transaction = $this->sdk
             ->transaction()
@@ -122,9 +125,11 @@ class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMet
                 $this->pagarmeCoreHelper
                     ->parseAmountToCents($quote->getGrandTotal()),
                 $customer,
-                $postBackURL,
+                $postbackUrl,
                 $payment->getOrder()
             );
+
+        //Mage::log($this->transaction);
 
         return $this;
     }
@@ -204,8 +209,9 @@ class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMet
             }
             $telephone = $billingAddress->getTelephone();
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
+                'pagarme_modal_customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
                 'pagarme_modal_customer_document_number' => $quote->getCustomerTaxvat(),
-                'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote),
+                'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
                 'pagarme_modal_customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
                 'pagarme_modal_customer_email' => $quote->getCustomerEmail(),
                 'pagarme_modal_customer_born_at' => $quote->getDob(),
@@ -223,6 +229,7 @@ class PagarMe_Bowleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMet
             ]);
             $customerPagarMe = $this->pagarmeCoreHelper
                 ->buildCustomer($customer);
+
             $order = $payment->getOrder();
             $extraAttributes = [
                 'async' => false,

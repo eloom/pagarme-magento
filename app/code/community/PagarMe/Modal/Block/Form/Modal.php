@@ -127,12 +127,12 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
 
     private function getCreditCardPostbackUrl()
     {
-        return Mage::getBaseUrl() . 'pagarme_core/transaction_creditcard/postback';
+        return Mage::getBaseUrl() . 'pagarme_core/transaction_notification/postback';
     }
 
     private function getBoletoPostbackUrl()
     {
-        return Mage::getBaseUrl() . 'pagarme_core/transaction_boleto/postback';
+        return Mage::getBaseUrl() . 'pagarme_core/transaction_notification/postback';
     }
 
     /**

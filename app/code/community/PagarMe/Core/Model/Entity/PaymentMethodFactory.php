@@ -26,7 +26,7 @@ class PagarMe_Core_Model_Entity_PaymentMethodFactory
                 'token' => $infoInstance->getAdditionalInformation('token'),
                 'amount' => Mage::helper('pagarme_core')
                     ->parseAmountToCents($amount),
-                'postback_url' => Mage::getUrl('pagarme/transaction_creditcard/postback'),
+                'postback_url' => Mage::getUrl('pagarme/transaction_notification/postback'),
             ]);
 
             return $transaction;
@@ -37,7 +37,7 @@ class PagarMe_Core_Model_Entity_PaymentMethodFactory
                 'token' => $infoInstance->getAdditionalInformation('token'),
                 'amount' => Mage::helper('pagarme_core')
                     ->parseAmountToCents($amount),
-                'postback_url' => Mage::getUrl('pagarme/transaction_boleto/postback'),
+                'postback_url' => Mage::getUrl('pagarme/transaction_notification/postback'),
             ]);
 
             return $transaction;

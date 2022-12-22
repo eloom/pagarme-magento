@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <config>
     <modules>
-        <PagarMe_Bowleto>
+        <PagarMe_Boleto>
             <active>true</active>
             <codePool>community</codePool>
             <depends>
                 <PagarMe_Core />
             </depends>
-        </PagarMe_Bowleto>
+        </PagarMe_Boleto>
     </modules>
 </config>

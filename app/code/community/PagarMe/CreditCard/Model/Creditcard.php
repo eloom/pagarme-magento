@@ -114,7 +114,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     private $stateObject;
 
     const PAGARME_MAX_INSTALLMENTS = 12;
-    const POSTBACK_ENDPOINT = 'transaction_creditcard';
+    const POSTBACK_ENDPOINT = 'transaction_notification';
 
     const AUTHORIZED = 'authorized';
     const PAID = 'paid';
@@ -720,8 +720,9 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     private function buildCustomerInformation($quote, $billingAddress, $telephone)
     {
         $customer = $this->pagarmeCoreHelper->prepareCustomerData([
+            'pagarme_modal_customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
             'pagarme_modal_customer_document_number' => $quote->getCustomerTaxvat(),
-            'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote),
+            'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
             'pagarme_modal_customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
             'pagarme_modal_customer_email' => $quote->getCustomerEmail(),
             'pagarme_modal_customer_born_at' => $quote->getDob(),

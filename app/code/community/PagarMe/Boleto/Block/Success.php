@@ -1,6 +1,6 @@
 <?php
 
-class PagarMe_Bowleto_Block_Success extends Mage_Checkout_Block_Onepage_Success
+class PagarMe_Boleto_Block_Success extends Mage_Checkout_Block_Onepage_Success
 {
     /**
      * @var Mage_Sales_Model_Order
@@ -33,7 +33,7 @@ class PagarMe_Bowleto_Block_Success extends Mage_Checkout_Block_Onepage_Success
             $paymentMethod = $additionalInfo['pagarme_payment_method'];
         }
 
-        if ($paymentMethod === PagarMe_Bowleto_Model_Boleto::PAGARME_BOLETO) {
+        if ($paymentMethod === PagarMe_Boleto_Model_Boleto::PAGARME_BOLETO) {
             return true;
         }
         return false;
