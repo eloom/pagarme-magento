@@ -34,7 +34,7 @@ enable-mage-errors:
 	@docker-compose exec magento mv errors/local.xml.sample errors/local.xml
 
 get-api-key:
-	@docker-compose exec magento vendor/bin/n98-magerun config:get payment/pagarme_configurations/general_api_key
+	@docker-compose exec magento vendor/bin/n98-magerun config:get payment/pagarme/api_key
 
 set-api-key:
 	@docker-compose exec magento vendor/bin/n98-magerun config:set $(api_key)

@@ -16,7 +16,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
 
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    const PAGARME_CREDITCARD = 'pagarme_creditcard';
+    const CREDITCARD = 'pagarme_creditcard';
 
     /**
      * @var string
@@ -26,12 +26,12 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     /**
      * @var string
      */
-    protected $_formBlockType = 'pagarme_creditcard/form_creditcard';
+    protected $_formBlockType = 'pagarme_creditcard/form';
 
     /**
      * @var string
      */
-    protected $_infoBlockType = 'pagarme_creditcard/info_creditcard';
+    protected $_infoBlockType = 'pagarme_creditcard/info';
 
     /**
      * @var boolean
@@ -209,16 +209,6 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      */
     public function setTransaction(CreditCardTransaction $transaction) {
         $this->transaction = $transaction;
-    }
-
-   /**
-    * Retrieve payment method title
-    *
-    * @return string
-    */
-    public function getTitle()
-    {
-        return $this->getCreditcardTitleStoreConfig();
     }
 
     /**
@@ -436,10 +426,11 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $refusedMessage = 'Unauthorized';
 
         $refusedReason = $this->transaction->getRefuseReason();
-
+        /*
         if ($refusedReason === self::REFUSE_REASON_ANTIFRAUD) {
             $refusedMessage = 'Suspected fraud';
         }
+        */
 
         return $refusedMessage;
     }

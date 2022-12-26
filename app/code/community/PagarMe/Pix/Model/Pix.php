@@ -1,13 +1,13 @@
 <?php
 use \PagarMe\Sdk\PagarMe as PagarMeSdk;
 
-class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMethod
+class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    protected $_code = 'pagarme_boleto';
-    protected $_formBlockType = 'pagarme_boleto/form';
-    protected $_infoBlockType = 'pagarme_boleto/info';
+    protected $_code = 'pagarme_pix';
+    protected $_formBlockType = 'pagarme_pix/form';
+    protected $_infoBlockType = 'pagarme_pix/info';
     protected $_isGateway = true;
     protected $_canAuthorize = true;
     protected $_canCapture = true;
@@ -16,7 +16,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     protected $_canManageRecurringProfiles = true;
     protected $_isInitializeNeeded = true;
 
-    const PAGARME_BOLETO = 'pagarme_boleto';
+    const PIX = 'pagarme_pix';
     const POSTBACK_ENDPOINT = 'transaction_notification';
 
     /**
@@ -25,7 +25,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     protected $sdk;
 
     /**
-     * @var PagarMe\Sdk\Transaction\BoletoTransaction
+     * @var PagarMe\Sdk\Transaction\PixTransaction
      */
     protected $transaction;
 
@@ -96,7 +96,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     public function getTitle()
     {
         return Mage::getStoreConfig(
-            'payment/pagarme_boleto/title'
+            'payment/pagarme_pix/title'
         );
     }
 
@@ -129,8 +129,6 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                 $payment->getOrder()
             );
 
-        //Mage::log($this->transaction);
-
         return $this;
     }
 
@@ -142,7 +140,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     public function assignData($data)
     {
         $additionalInfoData = [
-            'pagarme_payment_method' => self::PAGARME_BOLETO
+            'pagarme_payment_method' => self::PIX
         ];
 
         $this->getInfoInstance()
@@ -159,7 +157,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
      */
     private function setOrderAsPendingPayment($amount, $order)
     {
-        $message = 'Boleto is waiting payment';
+        $message = 'Pix is waiting payment';
         $notifyCustomer = true;
         $order->setState(
             Mage_Sales_Model_Order::STATE_PENDING_PAYMENT,
@@ -234,8 +232,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
             $extraAttributes = [
                 'async' => false,
                 'reference_key' => $referenceKey,
-                'boleto_expiration_date' => $this->getBoletoExpirationDate(),
-                'boleto_instructions' => $this->getBoletoInstructions(),
+                'pix_expires_in' => $this->getBoletoExpirationDate()
             ];
 
             $amount = $this->pagarmeCoreHelper
@@ -243,7 +240,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
 
             $this->transaction = $this->sdk
                 ->transaction()
-                ->boletoTransaction(
+                ->pixTransaction(
                     $amount,
                     $customerPagarMe,
                     $this->getUrlForPostback(),
@@ -290,7 +287,6 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
             'pagarme_transaction_id' => $transaction->getId(),
             'store_order_id' => $order->getId(),
             'store_increment_id' => $order->getIncrementId(),
-            'pagarme_boleto_url' => $transaction->getBoletoUrl(),
         ];
 
         return array_merge(

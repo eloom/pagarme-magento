@@ -95,53 +95,55 @@
     </adminhtml>
     <default>
         <payment>
-            <pagarme_modal>
-                <active>0</active>
-                <title>Pagar.me Checkout</title>
-                <model>pagarme_modal/modal</model>
-                <order_status>pending</order_status>
-                <allowspecific>0</allowspecific>
-                <payment_methods>credit_card,boleto</payment_methods>
-                <payment_action>authorize</payment_action>
-                <group>pagarmev2</group>
-            </pagarme_modal>
             <pagarme_creditcard>
-                <active>1</active>
-                <title>Pagar.me Cartão de crédito</title>
+                <active>0</active>
+                <title><![CDATA[Cartão de Crédito]]></title>
                 <model>pagarme_creditcard/creditcard</model>
                 <order_status>pending_payment</order_status>
                 <allowspecific>0</allowspecific>
                 <payment_methods>credit_card</payment_methods>
                 <payment_action>authorize</payment_action>
-                <group>pagarmev2</group>
+                <max_installments>12</max_installments>
+                <interest_rate>1.49</interest_rate>
+                <min_installment_value>15.00</min_installment_value>
+                <free_installments>3</free_installments>
+                <allowed_brands>visa,mastercard,amex,hipercard,aura,jcb,diners,elo,discover</allowed_brands>
+                <sort_order>2</sort_order>
             </pagarme_creditcard>
             <pagarme_boleto>
-                <active>1</active>
-                <title>Pagar.me Boleto</title>
+                <active>0</active>
+                <title><![CDATA[Boleto Bancário]]></title>
                 <model>pagarme_boleto/boleto</model>
                 <order_status>authorize</order_status>
                 <allowspecific>0</allowspecific>
                 <payment_methods>boleto</payment_methods>
                 <payment_action>authorize</payment_action>
-                <group>pagarmev2</group>
+                <days_to_expire>1</days_to_expire>
+                <instructions><![CDATA[]]>
+                </instructions>
+                <sort_order>3</sort_order>
             </pagarme_boleto>
-            <pagarme_configurations>
-                <modal_title>Pagarme Checkout</modal_title>
-                <modal_button_text>Realizar pagamento</modal_button_text>
-                <creditcard_interest_rate>0</creditcard_interest_rate>
-                <creditcard_free_installments>1</creditcard_free_installments>
-                <creditcard_max_installments>1</creditcard_max_installments>
-                <creditcard_allowed_creditcard_brands>visa,mastercard,amex,hipercard,aura,jcb,diners,elo,discover</creditcard_allowed_creditcard_brands>
-                <creditcard_title>Pagamento com cartão de crédito</creditcard_title>
-                <modal_capture_customer_data>true</modal_capture_customer_data>
-                <boleto_discount>0</boleto_discount>
-                <days_to_boleto_expire>5</days_to_boleto_expire>
-                <boleto_discount_mode>no_discount</boleto_discount_mode>
-                <boleto_title>Pagamento com boleto</boleto_title>
-                <modal_payment_methods>credit_card,boleto</modal_payment_methods>
-                <payment_action>authorize_capture</payment_action>
-                <modal_capture_customer_data>false</modal_capture_customer_data>
-            </pagarme_configurations>
+            <pagarme_pix>
+                <active>0</active>
+                <title><![CDATA[PIX]]></title>
+                <model>pagarme_pix/pix</model>
+                <order_status>authorize</order_status>
+                <allowspecific>0</allowspecific>
+                <payment_methods>pix</payment_methods>
+                <payment_action>authorize</payment_action>
+                <instructions><![CDATA[<p>Ao finalizar seu pedido, você verá o QR Code ou o código do PIX para efetuar o pagamento pelo aplicativo de sua instituição financeira.</p><p>O prazo para pagamento é de 2 horas.</p>]]></instructions>
+                <sort_order>1</sort_order>
+            </pagarme_pix>
+            <pagarme_modal>
+                <active>0</active>
+                <title>Pagar.me Modal Checkout</title>
+                <model>pagarme_modal/modal</model>
+                <order_status>pending</order_status>
+                <allowspecific>0</allowspecific>
+                <payment_action>authorize</payment_action>
+                <payment_methods>credit_card,boleto,pix</payment_methods>
+                <sort_order>4</sort_order>
+            </pagarme_modal>
         </payment>
     </default>
 </config>

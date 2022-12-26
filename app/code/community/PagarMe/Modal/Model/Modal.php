@@ -55,7 +55,7 @@ class PagarMe_Modal_Model_Modal extends Mage_Payment_Model_Method_Abstract
         }
 
         return (bool) Mage::getStoreConfig(
-            'payment/pagarme_configurations/modal_active'
+            'payment/pagarme_modal/active'
         );
     }
 
@@ -67,7 +67,7 @@ class PagarMe_Modal_Model_Modal extends Mage_Payment_Model_Method_Abstract
     public function getTitle()
     {
         return Mage::getStoreConfig(
-            'payment/pagarme_configurations/modal_title'
+            'payment/pagarme_modal/title'
         );
     }
 

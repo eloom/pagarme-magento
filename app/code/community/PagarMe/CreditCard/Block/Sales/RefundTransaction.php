@@ -40,7 +40,7 @@ class PagarMe_CreditCard_Block_Sales_RefundTransaction extends Mage_Core_Block_A
 
     protected function checkIfPaymentMethodIsCC()
     {
-        $ccMethod = PagarMe_CreditCard_Model_Creditcard::PAGARME_CREDITCARD;
+        $ccMethod = PagarMe_CreditCard_Model_Creditcard::CREDITCARD;
         $orderPaymentMethod = $this->getReferencedOrder()
                                     ->getPayment()
                                     ->getMethod();

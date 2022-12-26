@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <PagarMe_Pix>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <PagarMe_Core />
+            </depends>
+        </PagarMe_Pix>
+    </modules>
+</config>

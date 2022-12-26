@@ -1,0 +1,12 @@
+<?php
+/**
+ * @see PagarMe_Pix_Block_Success
+ */
+?>
+
+<?php if ($this->isBoletoPayment()): ?>
+    <p class="pagarme_pix_info">
+    <?php echo Mage::helper('pagarme_pix')->__('Click the followed link to print your pix') ?>
+
+    </p>
+<?php endif; ?>

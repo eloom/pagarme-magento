@@ -49,7 +49,7 @@ class PagarMe_CreditCard_Block_Sales_RateAmount extends Mage_Core_Block_Abstract
         }
 
         $paymentIsPagarMeCreditcard = $referencedOrder->getPayment()->getMethod() ==
-            PagarMe_CreditCard_Model_Creditcard::PAGARME_CREDITCARD;
+            PagarMe_CreditCard_Model_Creditcard::CREDITCARD;
 
         $rateAmount = $this->getRateAmount();
         $rateAmountIsntZero = !is_null($rateAmount) && $rateAmount > 0;

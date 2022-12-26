@@ -25,9 +25,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getDevelopmentPostbackUrl()
     {
-        $devPostbackUrl = trim($this->getConfigurationWithName(
-            'pagarme_configurations/dev_custom_postback_url'
-        ));
+        $devPostbackUrl = trim(Mage::getStoreConfig('payment/pagarme/dev_custom_postback_url'));
 
         if (!filter_var($devPostbackUrl, FILTER_VALIDATE_URL)) {
             return '';
@@ -41,48 +39,11 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
     }
 
     /**
-     * @return bool
-     */
-    private function isTransparentCheckoutActiveStoreConfig()
-    {
-        return (bool) $this->getConfigurationWithName(
-            'pagarme_configurations/transparent_active'
-        );
-    }
-
-    /**
-     * Returns wich payment method is available on checkou transparent:
-     * credit card, boleto and/or credit card and boleto
-     *
-     * @see app/code/community/PagarMe/Core/etc/system.xml
-     *
-     * @return string
-     */
-    public function getActiveTransparentPaymentMethod()
-    {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/transparent_payment_methods'
-        );
-    }
-
-    /**
-     * @return string
-     */
-    private function getCreditcardTitleStoreConfig()
-    {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/creditcard_title'
-        );
-    }
-
-    /**
      * @return int
      */
     private function getMaxInstallmentStoreConfig()
     {
-        return (int) $this->getConfigurationWithName(
-            'pagarme_configurations/creditcard_max_installments'
-        );
+        return (int)Mage::getStoreConfig('payment/pagarme_creditcard/max_installments');
     }
 
     /**
@@ -90,9 +51,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getMinInstallmentValueStoreConfig()
     {
-        return (float) $this->getConfigurationWithName(
-            'pagarme_configurations/creditcard_min_installment_value'
-        );
+        return (float)Mage::getStoreConfig('payment/pagarme_creditcard/min_installment_value');
     }
 
     /**
@@ -100,9 +59,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     public function getEncryptionKeyStoreConfig()
     {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/general_encryption_key'
-        );
+        return Mage::getStoreConfig('payment/pagarme/encryption_key');
     }
 
     /**
@@ -110,9 +67,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     public function getAsyncTransactionConfig()
     {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/async_transaction'
-        );
+        return Mage::getStoreConfig('payment/pagarme_creditcard/async_transaction');
     }
 
     /**
@@ -120,9 +75,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     public function getPaymentActionConfig()
     {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/payment_action'
-        );
+        return Mage::getStoreConfig('payment/pagarme_creditcard/payment_action');
     }
 
     /**
@@ -130,9 +83,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getFreeInstallmentStoreConfig()
     {
-        return (int) $this->getConfigurationWithName(
-            'pagarme_configurations/creditcard_free_installments'
-        );
+        return (int)Mage::getStoreConfig('payment/pagarme_creditcard/free_installments');
     }
 
     /**
@@ -140,9 +91,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getInterestRateStoreConfig()
     {
-        return (float) $this->getConfigurationWithName(
-            'pagarme_configurations/creditcard_interest_rate'
-        );
+        return (float)Mage::getStoreConfig('payment/pagarme_creditcard/interest_rate');
     }
 
     /**
@@ -150,9 +99,7 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getDaysToBoletoExpire()
     {
-        return (int) $this->getConfigurationWithName(
-            'pagarme_configurations/days_to_boleto_expire'
-        );
+        return (int)Mage::getStoreConfig('payment/pagarme_boleto/days_to_expire');
     }
 
     /**
@@ -160,18 +107,6 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
      */
     private function getBoletoInstructions()
     {
-        return $this->getConfigurationWithName(
-            'pagarme_configurations/boleto_instructions'
-        );
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return mixed
-     */
-    private function getConfigurationWithName($name)
-    {
-        return Mage::getStoreConfig("payment/{$name}");
+        return Mage::getStoreConfig('payment/pagarme_boleto/instructions');
     }
 }

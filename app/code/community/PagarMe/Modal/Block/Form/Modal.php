@@ -36,7 +36,7 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
     public function getEncryptionKey()
     {
         return Mage::getStoreConfig(
-            'payment/pagarme_configurations/general_encryption_key'
+            'payment/pagarme/encryption_key'
         );
     }
 
@@ -48,7 +48,7 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
     public function getButtonText()
     {
         $configuredMessage = Mage::getStoreConfig(
-          'payment/pagarme_configurations/modal_button_text'
+          'payment/pagarme_modal/button_text'
         );
         $defaultMessage = $this->helper->__('Confirm your information');
 
@@ -141,26 +141,26 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
     public function getAvailablePaymentMethods()
     {
         return Mage::getStoreConfig(
-            'payment/pagarme_configurations/modal_payment_methods'
+            'payment/pagarme_modal/payment_methods'
         );
     }
 
     public function hasFixedDiscountOnBoleto()
     {
-        return Mage::getStoreConfig('payment/pagarme_configurations/boleto_discount_mode')
+        return Mage::getStoreConfig('payment/pagarme_boleto/discount_mode')
             == PagarMe_Core_Model_System_Config_Source_BoletoDiscountMode::FIXED_VALUE;
     }
 
     private function hasPercentageDiscountOnBoleto()
     {
-        return Mage::getStoreConfig('payment/pagarme_configurations/boleto_discount_mode')
+        return Mage::getStoreConfig('payment/pagarme_boleto/discount_mode')
             == PagarMe_Core_Model_System_Config_Source_BoletoDiscountMode::PERCENTAGE;
     }
 
     private function getBoletoDiscount()
     {
         return Mage::getStoreConfig(
-            'payment/pagarme_configurations/boleto_discount'
+            'payment/pagarme_boleto/discount'
         );
     }
 
@@ -181,7 +181,7 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
         $helper = Mage::helper('pagarme_core');
 
         $cardBrands = \Mage::getStoreConfig(
-            'payment/pagarme_configurations/creditcard_allowed_credit_card_brands'
+            'payment/pagarme_creditcard/allowed_brands'
         );
 
         $config = [
@@ -202,31 +202,31 @@ class PagarMe_Modal_Block_Form_Modal extends Mage_Payment_Block_Form
             'customerAddressState' => $billingAddress->getRegion(),
             'brands' => $cardBrands,
             'boletoHelperText' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_boleto_helper_text'
+                'payment/pagarme_modal/boleto_helper_text'
             ),
             'creditCardHelperText' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_credit_card_helper_text'
+                'payment/pagarme_modal/credit_card_helper_text'
             ),
             'uiColor' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_ui_color'
+                'payment/pagarme_modal/ui_color'
             ),
             'headerText' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_header_text'
+                'payment/pagarme_modal/header_text'
             ),
             'paymentButtonText' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_payment_button_text'
+                'payment/pagarme_modal/payment_button_text'
             ),
             'interestRate' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/creditcard_interest_rate'
+                'payment/pagarme_creditcard/interest_rate'
             ),
             'maxInstallments' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/creditcard_max_installments'
+                'payment/pagarme_creditcard/max_installments'
             ),
             'freeInstallments' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/creditcard_free_installments'
+                'payment/pagarme_creditcard/free_installments'
             ),
             'customerData' => Mage::getStoreConfig(
-                'payment/pagarme_configurations/modal_capture_customer_data'
+                'payment/pagarme_modal/capture_customer_data'
             ),
             'postbackUrl' => $this->getPostbackUrl()
         ];
