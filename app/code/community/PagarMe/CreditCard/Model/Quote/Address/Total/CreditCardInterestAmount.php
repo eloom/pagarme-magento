@@ -84,7 +84,7 @@ class PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount exte
     private function interestAmountInReals($address, $paymentMethodParameters)
     {
         $pagarMeSdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
+            ->getSdk();
 
         $helper = Mage::helper('pagarme_core');
 

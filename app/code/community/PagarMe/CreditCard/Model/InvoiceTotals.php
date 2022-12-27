@@ -52,7 +52,7 @@ class PagarMe_CreditCard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invo
         Mage_Sales_Model_Order_Invoice $invoice
     ) {
         $sdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
+            ->getSdk();
 
         $orderTotal =
             $invoice->getGrandTotal() + $this->order->getShippingAmount();

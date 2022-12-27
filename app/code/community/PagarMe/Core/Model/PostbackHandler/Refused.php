@@ -24,7 +24,7 @@ class PagarMe_Core_Model_PostbackHandler_Refused extends PagarMe_Core_Model_Post
     private function retrieveTransaction()
     {
         $sdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
+            ->getSdk();
 
         return $sdk->transaction()->get($this->transactionId);
     }

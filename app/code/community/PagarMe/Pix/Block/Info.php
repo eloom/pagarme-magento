@@ -7,9 +7,7 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplate(
-            'pagarme/pix/order_info/payment_details.phtml'
-        );
+        $this->setTemplate('pagarme/pix/order_info/payment_details.phtml');
     }
 
     /**
@@ -18,7 +16,7 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
      */
     public function transactionId()
     {
-        return $this->getTransaction()->getId();
+        return $this->getTransaction()->id;
     }
 
     /**
@@ -27,7 +25,7 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
      */
     public function getQrCode()
     {
-        return $this->getTransaction()->getPixQrCode();
+        return $this->getTransaction()->pix_qr_code;
     }
 
     /**

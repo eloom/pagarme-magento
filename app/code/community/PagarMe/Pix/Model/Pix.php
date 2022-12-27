@@ -1,5 +1,4 @@
 <?php
-use \PagarMe\Sdk\PagarMe as PagarMeSdk;
 
 class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 {
@@ -20,13 +19,10 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
     const POSTBACK_ENDPOINT = 'transaction_notification';
 
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
     protected $sdk;
 
-    /**
-     * @var PagarMe\Sdk\Transaction\PixTransaction
-     */
     protected $transaction;
 
     /**
@@ -39,18 +35,12 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
      */
     protected $businessCalendar;
 
-    public function __construct($attributes, PagarMeSdk $sdk = null)
-    {
-        if (is_null($sdk)) {
-            $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')
-                 ->getPagarMeSdk();
-        }
+    public function __construct() {
+        $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
 
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
 
         $this->businessCalendar = new PagarMe_Core_Helper_BusinessCalendar();
-
-        parent::__construct($attributes);
     }
 
     /**
@@ -88,11 +78,11 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
         return $this;
     }
 
-   /**
-    * Retrieve payment method title
-    *
-    * @return string
-    */
+    /**
+     * Retrieve payment method title
+     *
+     * @return string
+     */
     public function getTitle()
     {
         return Mage::getStoreConfig(
@@ -114,7 +104,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
      */
     public function createTransaction(
         \PagarMe\Sdk\Customer\Customer $customer
-    ) {
+    )
+    {
         $payment = $this->getInfoInstance();
         $postbackUrl = $this->getUrlForPostback();
 
@@ -207,49 +198,34 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             }
             $telephone = $billingAddress->getTelephone();
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
-                'pagarme_modal_customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
-                'pagarme_modal_customer_document_number' => $quote->getCustomerTaxvat(),
-                'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
-                'pagarme_modal_customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
-                'pagarme_modal_customer_email' => $quote->getCustomerEmail(),
-                'pagarme_modal_customer_born_at' => $quote->getDob(),
-                'pagarme_modal_customer_address_street_1' => $billingAddress->getStreet(1),
-                'pagarme_modal_customer_address_street_2' => $billingAddress->getStreet(2),
-                'pagarme_modal_customer_address_street_3' => $billingAddress->getStreet(3),
-                'pagarme_modal_customer_address_street_4' => $billingAddress->getStreet(4),
-                'pagarme_modal_customer_address_city' => $billingAddress->getCity(),
-                'pagarme_modal_customer_address_state' => $billingAddress->getRegion(),
-                'pagarme_modal_customer_address_zipcode' => $billingAddress->getPostcode(),
-                'pagarme_modal_customer_address_country' => $billingAddress->getCountry(),
-                'pagarme_modal_customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
-                'pagarme_modal_customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
-                'pagarme_modal_customer_gender' => $quote->getGender()
+                'customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
+                'customer_document_number' => $quote->getCustomerTaxvat(),
+                'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
+                'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
+                'customer_email' => $quote->getCustomerEmail(),
+                'customer_address_country' => $billingAddress->getCountry(),
+                'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
+                'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone)
             ]);
-            $customerPagarMe = $this->pagarmeCoreHelper
-                ->buildCustomer($customer);
 
             $expiration = new DateTime('now + 2 hour');
 
             $order = $payment->getOrder();
-            $extraAttributes = [
-                'async' => false,
-                'reference_key' => $referenceKey,
-            ];
-
-            $amount = $this->pagarmeCoreHelper
-                ->parseAmountToCents($quote->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($quote->getGrandTotal());
 
             $this->transaction = $this->sdk
-                ->transaction()
-                ->pixTransaction(
-                    $amount,
-                    $customerPagarMe,
-                    $this->getUrlForPostback(),
-                    ['order_id' => $order->getIncrementId()],
-                    $expiration->format('Y-m-d\TH:i:s'),
-                    $extraAttributes
-                );
-
+                ->transactions()
+                ->create([
+                    'payment_method' => 'pix',
+                    'pix_expiration_date' => $expiration->format('Y-m-d\TH:i:s'),
+                    'amount' => $amount,
+                    'customer' => $customer,
+                    'async' => false,
+                    'postback_url' => $this->getUrlForPostback(),
+                    'metadata' => [
+                        'reference_key' => $referenceKey
+                    ]
+                ]);
             $this->setOrderAsPendingPayment($amount, $order);
 
             $infoInstance->setAdditionalInformation(
@@ -268,7 +244,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 
             $response = array_reduce($json->errors, function ($carry, $item) {
                 return is_null($carry)
-                    ? $item->message : $carry."\n".$item->message;
+                    ? $item->message : $carry . "\n" . $item->message;
             });
             Mage::throwException($response);
         }
@@ -278,7 +254,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 
     /**
      * @param Mage_Sales_Model_Order_Payment $infoInstance
-     * @param \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
+     * @param stdClass $transaction
      * @param Mage_Sales_Model_Order $order
      *
      * @return array
@@ -286,10 +262,11 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
     private function extractAdditionalInfo($infoInstance, $transaction, $order)
     {
         $data = [
-            'pagarme_transaction_id' => $transaction->getId(),
+            'pagarme_transaction_id' => $transaction->id,
             'store_order_id' => $order->getId(),
             'store_increment_id' => $order->getIncrementId(),
-            'pagarme_pix_qrcode' => $transaction->getPixQrCode(),
+            'pagarme_pix_qrcode' => $transaction->pix_qr_code,
+            'pagarme_pix_expiration_date' => $transaction->pix_expiration_date,
         ];
 
         return array_merge(

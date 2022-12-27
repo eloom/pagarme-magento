@@ -58,7 +58,7 @@ class PagarMe_Boleto_Model_UnpaidBoleto
     private function loadBoletoTransaction($transactionId)
     {
         $sdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
+            ->getSdk();
 
         return $sdk->transaction()->get($transactionId);
     }

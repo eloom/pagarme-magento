@@ -1,10 +1,5 @@
 <?php
 
-use PagarMe\Sdk\Transaction\AbstractTransaction;
-use PagarMe\Sdk\Transaction\CreditCardTransaction;
-use PagarMe\Sdk\Transaction\BoletoTransaction;
-use PagarMe\Sdk\Transaction\PixTransaction;
-
 class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
@@ -29,7 +24,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
 
     /**
      * @param Mage_Sales_Model_Order $order
-     * @param CreditCardTransaction $transaction
+     * @param stdClass $transaction
      *
      * @return void
      */
@@ -37,7 +32,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
     {
         $quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
 
-        $installments = $transaction->getInstallments();
+        $installments = $transaction->installments;
         $interestRate = $this->getInterestRateStoreConfig();
 
         $subtotalWithDiscount = $quote->getData()['subtotal_with_discount'];
@@ -57,22 +52,20 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
     }
 
     /**
-     * @param BoletoTransaction $transaction
+     * @param stdClass $transaction
      *
      * @return void
      */
     private function saveBoletoInformation($transaction)
     {
-        $this->setBoletoExpirationDate(
-            $transaction->getBoletoExpirationDate()->getTimestamp()
-        );
+        $this->setBoletoExpirationDate($transaction->boleto_expiration_date);
     }
 
     /**
      * @param Mage_Sales_Model_Order $order
      * @param Mage_Sales_Model_Order_Payment $infoInstance
      * @param string $referenceKey
-     * @param AbstractTransaction $transaction
+     * @param stdClass $transaction
      *
      * @return void
      *
@@ -82,7 +75,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
         Mage_Sales_Model_Order $order,
                                $infoInstance,
                                $referenceKey,
-        AbstractTransaction    $transaction = null
+        stdClass               $transaction = null
     )
     {
         $this
@@ -90,20 +83,18 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
             ->setOrderId($order->getId());
 
         if (!is_null($transaction)) {
-            $totalAmount = Mage::helper('pagarme_core')
-                ->parseAmountToCurrency($transaction->getAmount());
+            $totalAmount = Mage::helper('pagarme_core')->parseAmountToCurrency($transaction->amount);
 
-            $this
-                ->setTransactionId($transaction->getId())
-                ->setPaymentMethod($transaction::PAYMENT_METHOD)
+            $this->setTransactionId($transaction->id)
+                ->setPaymentMethod($transaction->payment_method)
                 ->setFutureValue($totalAmount);
 
-            if ($transaction instanceof CreditCardTransaction) {
+            if ($transaction->payment_method == 'credit_card') {
                 $this->saveCreditCardInformation($order, $transaction);
-            } else if ($transaction instanceof PixTransaction) {
-                $this->setPixQrCode($transaction->getPixQrCode());
-                $this->setPixExpirationDate($transaction->getPixExpirationDate());
-            } else if ($transaction instanceof BoletoTransaction) {
+            } else if ($transaction->payment_method == 'pix') {
+                $this->setPixQrCode($transaction->pix_qr_code);
+                $this->setPixExpirationDate($transaction->pix_expiration_date);
+            } else if ($transaction->payment_method == 'boleto') {
                 $this->saveBoletoInformation($transaction);
             }
         }

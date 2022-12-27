@@ -3,33 +3,33 @@
 class PagarMe_Core_Model_Service_Transaction
 {
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
-    protected $pagarMeSdk;
+    protected $sdk;
     
     /**
-     * @return \PagarMe\Sdk\PagarMe
+     * @return \PagarMe\Client
      */
-    public function getPagarMeSdk()
+    public function getSdk()
     {
-        if (is_null($this->pagarMeSdk)) {
-            $this->setPagarMeSdk(
+        if (is_null($this->sdk)) {
+            $this->setSdk(
                 Mage::getModel('pagarme_core/sdk_adapter')
-                    ->getPagarMeSdk()
+                    ->getSdk()
             );
         }
 
-        return $this->pagarMeSdk;
+        return $this->sdk;
     }
 
     /**
-     * @param \PagarMe\Sdk\PagarMe $pagarMeSdk
+     * @param \PagarMe\Client $sdk
      *
      * @return void
      */
-    public function setPagarMeSdk(\PagarMe\Sdk\PagarMe $pagarMeSdk)
+    public function setSdk(\PagarMe\Client $sdk)
     {
-        $this->pagarMeSdk = $pagarMeSdk;
+        $this->sdk = $sdk;
     }
 
     /**
@@ -39,7 +39,7 @@ class PagarMe_Core_Model_Service_Transaction
     public function getTransactionById($transactionId)
     {
         return $this
-            ->getPagarMeSdk()
+            ->getSdk()
             ->transaction()
             ->get($transactionId);
     }
@@ -55,7 +55,7 @@ class PagarMe_Core_Model_Service_Transaction
         \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
     ) {
         try {
-            return $this->getPagarMeSdk()
+            return $this->getSdk()
                 ->transaction()
                 ->capture(
                     $transaction,

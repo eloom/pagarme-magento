@@ -1,12 +1,11 @@
 <?php
-use PagarMe\Sdk\Transaction\AbstractTransaction;
 
 trait PagarMe_Core_Block_Info_Trait
 {
     /**
      * @codeCoverageIgnore
      *
-     * @return AbstractTransaction
+     * @return ArrayObject
      * @throws \Exception
      */
     public function getTransaction()
@@ -50,13 +49,13 @@ trait PagarMe_Core_Block_Info_Trait
      *
      * @param int $transactionId
      *
-     * @return AbstractTransaction
+     * @return ArrayObject
      */
     private function fetchPagarmeTransactionFromAPi($transactionId)
     {
         return \Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk()
-            ->transaction()
-            ->get($transactionId);
+            ->getSdk()
+            ->transactions()
+            ->get(['id' => $transactionId]);
     }
 }

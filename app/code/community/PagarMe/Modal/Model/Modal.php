@@ -130,7 +130,7 @@ class PagarMe_Modal_Model_Modal extends Mage_Payment_Model_Method_Abstract
         }
 
         $pagarMeSdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
+            ->getSdk();
 
         $transaction = $pagarMeSdk->transaction()->get($token);
 
@@ -173,7 +173,7 @@ class PagarMe_Modal_Model_Modal extends Mage_Payment_Model_Method_Abstract
 
     /**
      * @param Mage_Sales_Model_Order_Payment $infoInstance
-     * @param \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
+     * @param stdClass $transaction
      * @param Mage_Sales_Model_Order $order
      *
      * @return array
@@ -186,8 +186,8 @@ class PagarMe_Modal_Model_Modal extends Mage_Payment_Model_Method_Abstract
             'store_increment_id'     => $order->getIncrementId()
         ];
 
-        if ($transaction instanceof PagarMe\Sdk\Transaction\BoletoTransaction) {
-            $data['pagarme_boleto_url'] = $transaction->getBoletoUrl();
+        if ($transaction->payment_method == 'boleto') {
+            $data['pagarme_boleto_url'] = $transaction->boleto_url;
         }
 
         return array_merge(

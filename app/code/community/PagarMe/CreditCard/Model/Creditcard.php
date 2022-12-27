@@ -1,10 +1,6 @@
 <?php
-use \PagarMe\Sdk\PagarMe as PagarMeSdk;
-use \PagarMe\Sdk\Card\Card as PagarmeCard;
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-use \PagarMe\Sdk\Transaction\CreditCardTransaction;
-use \PagarMe\Sdk\Customer\Customer as PagarmeCustomer;
-use \PagarMe\Sdk\PagarMeException;
+
+use PagarMe\Exceptions\PagarMeException;
 use PagarMe_CreditCard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
 use PagarMe_CreditCard_Model_Exception_GenerateCard as GenerateCardException;
 use PagarMe_CreditCard_Model_Exception_TransactionsInstallmentsDivergent as TransactionsInstallmentsDivergent;
@@ -79,12 +75,12 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     protected $_isInitializeNeeded = true;
 
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
     protected $sdk;
 
     /**
-     * @var PagarMe\Sdk\Transaction\CreditCardTransaction
+     * @var stdClass
      */
     protected $transaction;
 
@@ -119,18 +115,12 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     const AUTHORIZED = 'authorized';
     const PAID = 'paid';
 
-    public function __construct($attributes, PagarMeSdk $sdk = null)
-    {
-        if (is_null($sdk)) {
-            $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')
-                 ->getPagarMeSdk();
-        }
+    public function __construct() {
+        $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
 
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
         $this->pagarmeCreditCardHelper = Mage::helper('pagarme_creditcard');
         $this->transactionModel = Mage::getModel('pagarme_core/transaction');
-
-        parent::__construct($attributes);
     }
 
     /**
@@ -180,12 +170,12 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     }
 
     /**
-     * @param \PagarMe\Sdk\PagarMe $sdk
+     * @param \PagarMe\Client $sdk
      * @return \PagarMe_CreditCard_Model_Creditcard
      *
      * @codeCoverageIgnore
      */
-    public function setSdk(PagarMeSdk $sdk)
+    public function setSdk(PagarMe\Client $sdk)
     {
         $this->sdk = $sdk;
 
@@ -203,11 +193,11 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     }
 
     /**
-     * @param CreditCardTransaction $transaction
+     * @param stdClass $transaction
      *
      * @return void
      */
-    public function setTransaction(CreditCardTransaction $transaction) {
+    public function setTransaction(stdClass $transaction) {
         $this->transaction = $transaction;
     }
 
@@ -384,7 +374,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     }
 
     /**
-     * @param \PagarMe\Sdk\PagarMeException $exception
+     * @param PagarMeException $exception
      * @return string
      */
     private function formatPagarmeExceptions($exception)
@@ -404,16 +394,16 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      * Add to payment card informations provided from API
      *
      * @param \Mage_Sales_Model_Order_Payment $payment
-     * @param \PagarMe\Sdk\Card\Card $card
+     * @param stdClass $card
      *
      * @return \Mage_Sales_Model_Order_Payment
      */
     public function insertCardInfosOnPayment($payment, $card)
     {
         $payment
-            ->setCcType($card->getBrand())
-            ->setCcOwner($card->getHolderName())
-            ->setCcLast4($card->getLastDigits());
+            ->setCcType($card->brand)
+            ->setCcOwner($card->holder_name)
+            ->setCcLast4($card->last_digits);
 
         return $payment;
     }
@@ -518,7 +508,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      * Defines additional information from transaction
      *
      * @param Mage_Sales_Model_Order_Payment $infoInstance $infoInstance
-     * @param CreditCardTransaction $transaction
+     * @param stdClass $transaction
      *
      * @return array
      */
@@ -529,7 +519,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         return array_merge(
             $infoInstance->getAdditionalInformation(),
             [
-                'pagarme_transaction_id' => $transaction->getId(),
+                'pagarme_transaction_id' => $transaction->id,
             ]
         );
     }
@@ -580,6 +570,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
 
             $this->transaction = $this->sdk
                 ->transaction()
+                //->setPaymentMethod(CreditCardTransaction::PAYMENT_METHOD)
                 ->creditCardTransaction(
                     $this->pagarmeCoreHelper->parseAmountToCents($amount),
                     $card,
@@ -710,29 +701,17 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     private function buildCustomerInformation($quote, $billingAddress, $telephone)
     {
         $customer = $this->pagarmeCoreHelper->prepareCustomerData([
-            'pagarme_modal_customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
-            'pagarme_modal_customer_document_number' => $quote->getCustomerTaxvat(),
-            'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
-            'pagarme_modal_customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
-            'pagarme_modal_customer_email' => $quote->getCustomerEmail(),
-            'pagarme_modal_customer_born_at' => $quote->getDob(),
-            'pagarme_modal_customer_address_street_1' => $billingAddress->getStreet(1),
-            'pagarme_modal_customer_address_street_2' => $billingAddress->getStreet(2),
-            'pagarme_modal_customer_address_street_3' => $billingAddress->getStreet(3),
-            'pagarme_modal_customer_address_street_4' => $billingAddress->getStreet(4),
-            'pagarme_modal_customer_address_city' => $billingAddress->getCity(),
-            'pagarme_modal_customer_address_state' => $billingAddress->getRegion(),
-            'pagarme_modal_customer_address_zipcode' => $billingAddress->getPostcode(),
-            'pagarme_modal_customer_address_country' => $billingAddress->getCountry(),
-            'pagarme_modal_customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
-            'pagarme_modal_customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
-            'pagarme_modal_customer_gender' => $quote->getGender()
+            'customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
+            'customer_document_number' => $quote->getCustomerTaxvat(),
+            'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
+            'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
+            'customer_email' => $quote->getCustomerEmail(),
+            'customer_address_country' => $billingAddress->getCountry(),
+            'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
+            'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone)
         ]);
 
-        $customerPagarMe = $this->pagarmeCoreHelper
-            ->buildCustomer($customer);
-
-        return $customerPagarMe;
+        return $customer;
     }
 
     /**

@@ -3,37 +3,25 @@
 class PagarMe_Core_Model_Sdk_Adapter extends Mage_Core_Model_Abstract
 {
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
-    private $pagarMeSdk;
+    private $sdk;
 
-    /**
-     * Timeout in seconds
-     *
-     * @var int
-     */
-    const SDK_TIMEOUT = 15;
-
-    public function _construct()
-    {
+    public function _construct() {
         parent::_construct();
 
-        $apiKey = Mage::getStoreConfig(
-            'payment/pagarme/api_key'
-        );
-        $this->pagarMeSdk = new \PagarMe\Sdk\PagarMe(
+        $apiKey = Mage::getStoreConfig('payment/pagarme/api_key');
+        $this->sdk = new \PagarMe\Client(
             $apiKey,
-            self::SDK_TIMEOUT,
-            $this->getUserAgent()
+            ['headers' => $this->getUserAgent()]
         );
     }
 
     /**
-     * @return \PagarMe\Sdk\PagarMe
+     * @return \PagarMe\Client
      */
-    public function getPagarMeSdk()
-    {
-        return $this->pagarMeSdk;
+    public function getSdk() {
+        return $this->sdk;
     }
 
     /**
@@ -50,7 +38,7 @@ class PagarMe_Core_Model_Sdk_Adapter extends Mage_Core_Model_Abstract
         return [
             'User-Agent' => $userAgentValue,
             'X-PagarMe-User-Agent' => $userAgentValue,
-            'X-PagarMe-Version' => '2017-07-17'
+            'X-PagarMe-Version' => '2019-09-01'
         ];
     }
 }

@@ -3,7 +3,7 @@
 class PagarMe_CreditCard_Model_Installments
 {
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
     private $sdk;
 
@@ -33,7 +33,7 @@ class PagarMe_CreditCard_Model_Installments
      * @param int $freeInstallments
      * @param float $interestRate
      * @param int $maxInstallments
-     * @param \PagarMe\Sdk\PagarMe $sdk
+     * @param \PagarMe\Client $sdk
      */
     public function __construct(
         $amount,

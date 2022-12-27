@@ -11,14 +11,11 @@ class PagarMe_Core_Model_CurrentOrder
     /**
      * @var PagarMe_Core_Model_Sdk_Adapter $sdk
      */
-    private $pagarMeSdk;
+    private $sdk;
 
-    public function __construct(
-        Mage_Sales_Model_Quote $quote,
-        PagarMe_Core_Model_Sdk_Adapter $pagarMeSdk
-    ) {
+    public function __construct(Mage_Sales_Model_Quote $quote, PagarMe_Core_Model_Sdk_Adapter $sdk) {
         $this->quote = $quote;
-        $this->pagarMeSdk = $pagarMeSdk;
+        $this->sdk = $sdk;
     }
     public function calculateInstallments(
         $maxInstallments,
@@ -26,14 +23,14 @@ class PagarMe_Core_Model_CurrentOrder
         $interestRate
     ) {
         $amount = $this->productsTotalValueInCents();
-        return $this->pagarMeSdk->getPagarMeSdk()
-            ->calculation()
-            ->calculateInstallmentsAmount(
-                $amount,
-                $interestRate,
-                $freeInstallments,
-                $maxInstallments
-            );
+        return $this->sdk->getSdk()
+            ->transactions()
+            ->calculateInstallments([
+                    'amount' => $amount,
+                    'free_installments' => $freeInstallments,
+                    'max_installments' => $maxInstallments,
+                    'interest_rate' => $interestRate
+            ]);
     }
 
     /**

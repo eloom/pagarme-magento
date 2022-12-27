@@ -1,5 +1,4 @@
 <?php
-use \PagarMe\Sdk\PagarMe as PagarMeSdk;
 
 class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMethod
 {
@@ -20,12 +19,12 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     const POSTBACK_ENDPOINT = 'transaction_notification';
 
     /**
-     * @var \PagarMe\Sdk\PagarMe
+     * @var \PagarMe\Client
      */
     protected $sdk;
 
     /**
-     * @var PagarMe\Sdk\Transaction\BoletoTransaction
+     * @var stdClass
      */
     protected $transaction;
 
@@ -39,18 +38,11 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
      */
     protected $businessCalendar;
 
-    public function __construct($attributes, PagarMeSdk $sdk = null)
-    {
-        if (is_null($sdk)) {
-            $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')
-                 ->getPagarMeSdk();
-        }
+    public function __construct() {
+        $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
 
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
-
         $this->businessCalendar = new PagarMe_Core_Helper_BusinessCalendar();
-
-        parent::__construct($attributes);
     }
 
     /**
@@ -207,47 +199,33 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
             }
             $telephone = $billingAddress->getTelephone();
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
-                'pagarme_modal_customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
-                'pagarme_modal_customer_document_number' => $quote->getCustomerTaxvat(),
-                'pagarme_modal_customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
-                'pagarme_modal_customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
-                'pagarme_modal_customer_email' => $quote->getCustomerEmail(),
-                'pagarme_modal_customer_born_at' => $quote->getDob(),
-                'pagarme_modal_customer_address_street_1' => $billingAddress->getStreet(1),
-                'pagarme_modal_customer_address_street_2' => $billingAddress->getStreet(2),
-                'pagarme_modal_customer_address_street_3' => $billingAddress->getStreet(3),
-                'pagarme_modal_customer_address_street_4' => $billingAddress->getStreet(4),
-                'pagarme_modal_customer_address_city' => $billingAddress->getCity(),
-                'pagarme_modal_customer_address_state' => $billingAddress->getRegion(),
-                'pagarme_modal_customer_address_zipcode' => $billingAddress->getPostcode(),
-                'pagarme_modal_customer_address_country' => $billingAddress->getCountry(),
-                'pagarme_modal_customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
-                'pagarme_modal_customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
-                'pagarme_modal_customer_gender' => $quote->getGender()
+                'customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
+                'customer_document_number' => $quote->getCustomerTaxvat(),
+                'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
+                'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
+                'customer_email' => $quote->getCustomerEmail(),
+                'customer_address_country' => $billingAddress->getCountry(),
+                'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
+                'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
             ]);
-            $customerPagarMe = $this->pagarmeCoreHelper
-                ->buildCustomer($customer);
 
             $order = $payment->getOrder();
-            $extraAttributes = [
-                'async' => false,
-                'reference_key' => $referenceKey,
-                'boleto_expiration_date' => $this->getBoletoExpirationDate(),
-                'boleto_instructions' => $this->getBoletoInstructions(),
-            ];
-
-            $amount = $this->pagarmeCoreHelper
-                ->parseAmountToCents($quote->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($quote->getGrandTotal());
 
             $this->transaction = $this->sdk
-                ->transaction()
-                ->boletoTransaction(
-                    $amount,
-                    $customerPagarMe,
-                    $this->getUrlForPostback(),
-                    ['order_id' => $order->getIncrementId()],
-                    $extraAttributes
-                );
+                ->transactions()
+                ->create([
+                    'payment_method' => 'boleto',
+                    'boleto_expiration_date' => $this->getBoletoExpirationDate(),
+                    'boleto_instructions' => $this->getBoletoInstructions(),
+                    'amount' => $amount,
+                    'customer' => $customer,
+                    'async' => false,
+                    'postback_url' => $this->getUrlForPostback(),
+                    'metadata' => [
+                        'reference_key' => $referenceKey
+                    ]
+                ]);
 
             $this->setOrderAsPendingPayment($amount, $order);
 
@@ -277,7 +255,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
 
     /**
      * @param Mage_Sales_Model_Order_Payment $infoInstance
-     * @param \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
+     * @param stdClass $transaction
      * @param Mage_Sales_Model_Order $order
      *
      * @return array
@@ -285,10 +263,10 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     private function extractAdditionalInfo($infoInstance, $transaction, $order)
     {
         $data = [
-            'pagarme_transaction_id' => $transaction->getId(),
+            'pagarme_transaction_id' => $transaction->id,
             'store_order_id' => $order->getId(),
             'store_increment_id' => $order->getIncrementId(),
-            'pagarme_boleto_url' => $transaction->getBoletoUrl(),
+            'pagarme_boleto_url' => $transaction->boleto_url,
         ];
 
         return array_merge(

@@ -4,15 +4,10 @@ class PagarMe_Boleto_Block_Info extends Mage_Payment_Block_Info
 {
     use PagarMe_Core_Block_Info_Trait;
 
-    private $helper;
-
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplate(
-            'pagarme/boleto/order_info/payment_details.phtml'
-        );
-        $this->helper = Mage::helper('pagarme_boleto');
+        $this->setTemplate('pagarme/boleto/order_info/payment_details.phtml');
     }
 
     /**
@@ -21,7 +16,7 @@ class PagarMe_Boleto_Block_Info extends Mage_Payment_Block_Info
      */
     public function transactionId()
     {
-        return $this->getTransaction()->getId();
+        return $this->getTransaction()->id;
     }
 
     /**
@@ -30,7 +25,7 @@ class PagarMe_Boleto_Block_Info extends Mage_Payment_Block_Info
      */
     public function getBoletoUrl()
     {
-        return $this->getTransaction()->getBoletoUrl();
+        return $this->getTransaction()->boleto_url;
     }
 
     /**

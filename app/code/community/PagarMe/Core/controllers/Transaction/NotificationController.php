@@ -102,8 +102,8 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
         Mage_Core_Controller_Request_Http $request,
         $signature
     ) {
-        return Mage::getModel('pagarme_core/sdk_adapter')->getPagarMeSdk()
-            ->postback()
-            ->validateRequest($request->getRawBody(), $signature);
+        return Mage::getModel('pagarme_core/sdk_adapter')->getSdk()
+            ->postbacks()
+            ->validate($request->getRawBody(), $signature);
     }
 }

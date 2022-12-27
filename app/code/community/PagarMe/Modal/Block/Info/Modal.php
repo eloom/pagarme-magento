@@ -50,7 +50,7 @@ class PagarMe_Modal_Block_Info_Modal extends Mage_Payment_Block_Info
             && isset($additionalInformation['token'])
         ) {
             $this->transaction = \Mage::getModel('pagarme_core/sdk_adapter')
-                ->getPagarMeSdk()
+                ->getSdk()
                 ->transaction()
                 ->get($additionalInformation['token']);
 

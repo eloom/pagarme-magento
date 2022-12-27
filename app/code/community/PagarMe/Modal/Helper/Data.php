@@ -24,7 +24,7 @@ class PagarMe_Modal_Helper_Data extends Mage_Core_Helper_Abstract
             ) {
                 $this->transaction = Mage::getModel(
                     'pagarme_core/sdk_adapter'
-                )->getPagarMeSdk()
+                )->getSdk()
                 ->transaction()
                 ->get($paymentData['pagarme_modal_token']);
 

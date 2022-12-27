@@ -84,28 +84,22 @@
                     <option value="0">
                       <?= Mage::helper('pagarme_core')->__('Please, select the number of installments'); ?>
                     </option>
-                    <?php foreach ($this->getInstallments() as $installmentNumber => $installmentInfo) : ?>
-                        <option value="<?= $installmentNumber ?>">
+                    <?php foreach ($this->getInstallments() as $installment) : ?>
+                        <option value="<?= $installment->installment ?>">
                             <?php
                                 $moduleHelper = Mage::helper('pagarme_core');
-                                $floatInstallmentAmount = $moduleHelper
-                                    ->parseAmountToCurrency(
-                                        $installmentInfo['installment_amount']
-                                    );
-                                $floatInstallmentTotalAmount = $moduleHelper
-                                    ->parseAmountToCurrency(
-                                        $installmentInfo['total_amount']
-                                );
-                                if ((int)$installmentNumber <= $this->getFreeInstallmentsConfig()) {
+                                $floatInstallmentAmount = $moduleHelper->parseAmountToCurrency($installment->installment_amount);
+                                $floatInstallmentTotalAmount = $moduleHelper->parseAmountToCurrency($installment->amount);
+                                if ((int)$installment->installment <= $this->getFreeInstallmentsConfig()) {
                                     echo sprintf(
                                         '%sx R$ %s (sem juros)',
-                                        $installmentNumber,
+                                        $installment->installment,
                                         number_format($floatInstallmentAmount, 2, ",", ".")
                                   );
                                 } else {
                                     echo sprintf(
                                         '%sx R$ %s (total R$ %s)',
-                                        $installmentNumber,
+                                        $installment->installment,
                                         number_format($floatInstallmentAmount, 2, ",", "."),
                                         number_format($floatInstallmentTotalAmount, 2, ",", ".")
                                   );

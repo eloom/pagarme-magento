@@ -18,21 +18,23 @@ class PagarMe_Creditcard_Block_Form extends Mage_Payment_Block_Form_Cc
     public function getInstallments()
     {
         $quote = Mage::helper('checkout')->getQuote();
-        $pagarMeSdk = Mage::getModel('pagarme_core/sdk_adapter');
+        $sdk = Mage::getModel('pagarme_core/sdk_adapter');
         $currentOrder = new CurrentOrder(
             $quote,
-            $pagarMeSdk
+            $sdk
         );
 
         $maxInstallments = $this->getMaxInstallmentsByMinimumAmount(
             $currentOrder->productsTotalValueInBRL()
         );
 
-        return $currentOrder->calculateInstallments(
+        $calculateInstallments = $currentOrder->calculateInstallments(
             $maxInstallments,
             $this->getFreeInstallmentStoreConfig(),
             $this->getInterestRateStoreConfig()
         );
+
+        return $calculateInstallments->installments;
     }
 
     /**

@@ -2,71 +2,32 @@
 
 class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    use \PagarMe\Sdk\Customer\CustomerBuilder {
-        \PagarMe\Sdk\Customer\CustomerBuilder::buildCustomer as _buildCustomer;
-    }
 
     /**
      * @param array $data
      *
-     * @return \stdClass
+     * @return \array
      */
-    public function prepareCustomerData($data)
-    {
-        return (object) [
-            'document_number' => Zend_Filter::filterStatic(
-                $data['pagarme_modal_customer_document_number'],
-                'Digits'
-            ),
-            'type' => $data['pagarme_modal_customer_type'],
-            'document_type' => $data['pagarme_modal_customer_document_type'],
-            'name' => $data['pagarme_modal_customer_name'],
-            'email' => $data['pagarme_modal_customer_email'],
-            'born_at' => $data['pagarme_modal_customer_born_at'],
-            'addresses' => [
-                (object) [
-                    'street' => $data[
-                        'pagarme_modal_customer_address_street_1'
-                    ],
-                    'street_number' => $data[
-                        'pagarme_modal_customer_address_street_2'
-                    ],
-                    'complementary' => $data[
-                        'pagarme_modal_customer_address_street_3'
-                    ],
-                    'neighborhood' => $data[
-                        'pagarme_modal_customer_address_street_4'
-                    ],
-                    'city' => $data['pagarme_modal_customer_address_city'],
-                    'state' => $data['pagarme_modal_customer_address_state'],
-                    'zipcode' => $data[
-                        'pagarme_modal_customer_address_zipcode'
-                    ],
-                    'country' => $data[
-                        'pagarme_modal_customer_address_country'
-                    ]
+    public function prepareCustomerData($data) {
+        return [
+            'external_id' => '#123456789', // FIXME: colocar código do cliente
+            'type' => $data['customer_type'],
+            'name' => $data['customer_name'],
+            'email' => $data['customer_email'],
+            'country' => strtolower($data['customer_address_country']),
+            'documents' => [
+                [
+                    'type' => $data['customer_document_type'],
+                    'number' => Zend_Filter::filterStatic(
+                        $data['customer_document_number'],
+                        'Digits'
+                    )
                 ]
             ],
-            'phones'          => [
-                (object) [
-                    'ddd' => $data['pagarme_modal_customer_phone_ddd'],
-                    'number' => $data['pagarme_modal_customer_phone_number'],
-                ],
-            ],
-            'gender' => $data['pagarme_modal_customer_gender'],
-            'date_created' => null
+            'phone_numbers' => [
+                '+55' . $data['customer_phone_ddd'] . $data['customer_phone_number'],// FIXME: DDI precisa ser dinâmico
+            ]
         ];
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param array $array
-     *
-     * @return \PagarMe\Sdk\Customer\Customer
-     */
-    public function buildCustomer($array)
-    {
-        return $this->_buildCustomer($array);
     }
 
     /**
@@ -119,7 +80,7 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
     public function getDocumentType($taxVat)
     {
         $documentNumber = preg_replace('/\D/', '', $taxVat);
-        if(strlen($documentNumber) == 11) {
+        if (strlen($documentNumber) == 11) {
             return 'cpf';
         }
 
@@ -134,7 +95,7 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
     public function getCustomerType($taxVat)
     {
         $documentNumber = preg_replace('/\D/', '', $taxVat);
-        if(strlen($documentNumber) == 11) {
+        if (strlen($documentNumber) == 11) {
             return 'individual';
         }
 
