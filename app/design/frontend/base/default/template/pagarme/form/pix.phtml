@@ -1,0 +1,5 @@
+<?php $_code = $this->getMethodCode() ?>
+<div class="form-list" id="payment_form_<?= $_code ?>" style="display: none;">
+    <?= $this->getMethod()->getConfigData('message');?>
+    <span><?= $this->getInstructions(); ?></span>
+</div>

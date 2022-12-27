@@ -2,7 +2,7 @@
 class PagarMe_Pix_Block_Form extends Mage_Payment_Block_Form
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
-    const TEMPLATE = 'pagarme/form/boleto.phtml';
+    const TEMPLATE = 'pagarme/form/pix.phtml';
 
     protected function _construct()
     {

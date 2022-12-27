@@ -228,11 +228,12 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             $customerPagarMe = $this->pagarmeCoreHelper
                 ->buildCustomer($customer);
 
+            $expiration = new DateTime('now + 2 hour');
+
             $order = $payment->getOrder();
             $extraAttributes = [
                 'async' => false,
                 'reference_key' => $referenceKey,
-                'pix_expires_in' => $this->getBoletoExpirationDate()
             ];
 
             $amount = $this->pagarmeCoreHelper
@@ -245,8 +246,11 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                     $customerPagarMe,
                     $this->getUrlForPostback(),
                     ['order_id' => $order->getIncrementId()],
+                    $expiration->format('Y-m-d\TH:i:s'),
                     $extraAttributes
                 );
+
+            //Mage::log($this->transaction);
 
             $this->setOrderAsPendingPayment($amount, $order);
 
@@ -294,41 +298,4 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             $data
         );
     }
-
-    /**
-     * @param DateTime $date
-     *
-     * @return string
-     */
-    private function getBoletoExpirationDate($date = null)
-    {
-        $boletoExpirationDate = !is_null($date) ?
-            $date :
-            $this->getInitialBoletoExpirationDate();
-
-        if ($this->businessCalendar->isBusinessDay($boletoExpirationDate)) {
-            return $boletoExpirationDate->format('Y-m-d');
-        }
-
-        $boletoExpirationDate->modify('+1 days');
-
-        return $this->getBoletoExpirationDate($boletoExpirationDate);
-    }
-
-    /**
-     * @return DateTime
-     */
-    private function getInitialBoletoExpirationDate()
-    {
-        $boletoExpirationDate = new DateTime(
-            'now',
-            new DateTimeZone('America/Sao_Paulo')
-        );
-
-        return $boletoExpirationDate->modify(
-            '+'.$this->getDaysToBoletoExpire().' days'
-        );
-    }
-
-
 }
