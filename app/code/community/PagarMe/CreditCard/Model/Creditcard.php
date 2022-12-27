@@ -581,8 +581,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             $this->transaction = $this->sdk
                 ->transaction()
                 ->creditCardTransaction(
-                    $this->pagarmeCoreHelper
-                        ->parseAmountToCents($amount),
+                    $this->pagarmeCoreHelper->parseAmountToCents($amount),
                     $card,
                     $customerPagarMe,
                     $installments,
