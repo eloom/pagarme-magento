@@ -4,15 +4,12 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
 {
     use PagarMe_Core_Block_Info_Trait;
 
-    private $helper;
-
     public function __construct()
     {
         parent::__construct();
         $this->setTemplate(
-            'pagarme/boleto/order_info/payment_details.phtml'
+            'pagarme/pix/order_info/payment_details.phtml'
         );
-        $this->helper = Mage::helper('pagarme_boleto');
     }
 
     /**
@@ -28,9 +25,9 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
      * @return string
      * @throws Exception
      */
-    public function getBoletoUrl()
+    public function getQrCode()
     {
-        return $this->getTransaction()->getBoletoUrl();
+        return $this->getTransaction()->getPixQrCode();
     }
 
     /**

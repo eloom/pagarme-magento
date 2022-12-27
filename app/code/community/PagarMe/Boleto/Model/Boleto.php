@@ -129,8 +129,6 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                 $payment->getOrder()
             );
 
-        //Mage::log($this->transaction);
-
         return $this;
     }
 

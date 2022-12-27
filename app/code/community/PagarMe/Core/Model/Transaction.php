@@ -1,14 +1,12 @@
 <?php
 
-use PagarMe_CreditCard_Model_Installments as Installments;
 use PagarMe\Sdk\Transaction\AbstractTransaction;
 use PagarMe\Sdk\Transaction\CreditCardTransaction;
 use PagarMe\Sdk\Transaction\BoletoTransaction;
+use PagarMe\Sdk\Transaction\PixTransaction;
 
 class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
 {
-    const REFERENCE_KEY_MIN_LENGTH = 20;
-
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
     /**
@@ -37,13 +35,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
      */
     private function saveCreditCardInformation($order, $transaction)
     {
-        $pagarMeSdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getPagarMeSdk();
-
-        $quote = Mage::getModel('sales/quote')
-            ->load($order->getQuoteId());
-
-        $helper = Mage::helper('pagarme_core');
+        $quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
 
         $installments = $transaction->getInstallments();
         $interestRate = $this->getInterestRateStoreConfig();
@@ -88,10 +80,11 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
      */
     public function saveTransactionInformation(
         Mage_Sales_Model_Order $order,
-        $infoInstance,
-        $referenceKey,
-        AbstractTransaction $transaction = null
-    ) {
+                               $infoInstance,
+                               $referenceKey,
+        AbstractTransaction    $transaction = null
+    )
+    {
         $this
             ->setReferenceKey($referenceKey)
             ->setOrderId($order->getId());
@@ -104,22 +97,15 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
                 ->setTransactionId($transaction->getId())
                 ->setPaymentMethod($transaction::PAYMENT_METHOD)
                 ->setFutureValue($totalAmount);
-        }
 
-        //@codingStandardsIgnoreLine
-        if (
-            !is_null($transaction) &&
-            $transaction instanceof CreditCardTransaction
-        ) {
-            $this->saveCreditCardInformation($order, $transaction);
-        }
-
-        //@codingStandardsIgnoreLine
-        if (
-            !is_null($transaction) &&
-            $transaction instanceof BoletoTransaction
-        ) {
-            $this->saveBoletoInformation($transaction);
+            if ($transaction instanceof CreditCardTransaction) {
+                $this->saveCreditCardInformation($order, $transaction);
+            } else if ($transaction instanceof PixTransaction) {
+                $this->setPixQrCode($transaction->getPixQrCode());
+                $this->setPixExpirationDate($transaction->getPixExpirationDate());
+            } else if ($transaction instanceof BoletoTransaction) {
+                $this->saveBoletoInformation($transaction);
+            }
         }
 
         $this->save();

@@ -5,11 +5,6 @@ class PagarMe_CreditCard_Block_Info extends Mage_Payment_Block_Info_Cc
     use PagarMe_Core_Block_Info_Trait;
 
     /**
-     * @var PagarMe_CreditCard_Helper
-     */
-    private $helper;
-
-    /**
      * @var \PagarMe\Sdk\Transaction\CreditCardTransaction
      */
     private $transaction;
@@ -20,7 +15,6 @@ class PagarMe_CreditCard_Block_Info extends Mage_Payment_Block_Info_Cc
         $this->setTemplate(
             'pagarme/creditcard/order_info/payment_details.phtml'
         );
-        $this->helper = Mage::helper('pagarme_creditcard');
     }
 
     /**

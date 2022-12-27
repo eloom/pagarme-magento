@@ -4,4 +4,9 @@
  */
 ?>
 
-PIX SUCCESS
+<?php if ($this->isPixPayment()): ?>
+    <p class="pagarme_pix_info">
+        <?php echo Mage::helper('pagarme_pix')->__('QR COde') ?>
+        <?php echo $this->getQrCode(); ?>
+    </p>
+<?php endif; ?>

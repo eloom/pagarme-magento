@@ -1,10 +1,10 @@
 <?php
 /**
- * @see PagarMe_Boleto_Block_Info
+ * @see PagarMe_Pix_Block_Info
  */
-$helper = Mage::helper('pagarme_boleto');
+$helper = Mage::helper('pagarme_pix');
 ?>
-<h3><?php echo $helper->__('Pagar.me Boleto'); ?></h3>
+<h3><?php echo $helper->__('Pagar.me PIX'); ?></h3>
 <table id="pagarme_order_info_payment_details">
     <tr>
         <td class="label">
@@ -16,15 +16,10 @@ $helper = Mage::helper('pagarme_boleto');
     </tr>
     <tr>
         <td class="label">
-            <strong><?php echo $helper->__('Boleto Url'); ?></strong>
+            <strong><?php echo $helper->__('QR Code'); ?></strong>
         </td>
         <td style="text-align: right" class="value">
-            <a
-                    href="<?php echo $this->getBoletoUrl(); ?>"
-                    target="_blank"
-            >
-                <?php echo $helper->__('Show boleto'); ?>
-            </a>
+            <?php echo $this->getQrCode(); ?>
         </td>
     </tr>
 </table>

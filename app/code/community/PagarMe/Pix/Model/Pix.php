@@ -250,8 +250,6 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                     $extraAttributes
                 );
 
-            //Mage::log($this->transaction);
-
             $this->setOrderAsPendingPayment($amount, $order);
 
             $infoInstance->setAdditionalInformation(
@@ -291,6 +289,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             'pagarme_transaction_id' => $transaction->getId(),
             'store_order_id' => $order->getId(),
             'store_increment_id' => $order->getIncrementId(),
+            'pagarme_pix_qrcode' => $transaction->getPixQrCode(),
         ];
 
         return array_merge(

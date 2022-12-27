@@ -24,7 +24,7 @@ class PagarMe_Pix_Block_Success extends Mage_Checkout_Block_Onepage_Success
     /**
      * @return bool
      */
-    public function isBoletoPayment()
+    public function isPixPayment()
     {
         $order = $this->getOrder();
         $additionalInfo = $order->getPayment()->getAdditionalInformation();
@@ -42,12 +42,12 @@ class PagarMe_Pix_Block_Success extends Mage_Checkout_Block_Onepage_Success
     /**
      * @return string
      */
-    public function getBoletoUrl()
+    public function getQrCode()
     {
         $order = $this->getOrder();
 
         $additionalInfo = $order->getPayment()->getAdditionalInformation();
         
-        return $additionalInfo['pagarme_boleto_url'];
+        return $additionalInfo['pagarme_pix_qrcode'];
     }
 }
