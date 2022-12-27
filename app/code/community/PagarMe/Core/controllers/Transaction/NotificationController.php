@@ -30,7 +30,7 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
 
         $data = $this->getRequest()->getPost();
 
-        $this->logger->info(sprintf("Processando notificação. Pedido [%s] - Status [%s].", $data['id'], $data['current_status']));
+        $this->logger->info(sprintf("Processando notificação. Transação [%s] - Status [%s].", $data['id'], $data['current_status']));
 
         $transactionId = $data['id'];
         $currentStatus = $data['current_status'];
@@ -43,8 +43,7 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
                     $currentStatus,
                     $oldStatus
                 );
-            return $this->getResponse()
-                ->setBody('ok');
+            return $this->getResponse()->setBody('ok');
         } catch (PagarMe_Core_Model_PostbackHandler_Exception $e) {
             $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
             //$this->logger->fatal($e->getTraceAsString());
