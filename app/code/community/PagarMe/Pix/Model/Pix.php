@@ -180,6 +180,9 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                         'order_id' => $order->getIncrementId()
                     ]
                 ]);
+
+            Mage::log($this->transaction);
+
             $this->setOrderAsPendingPayment($amount, $order);
 
             $infoInstance->setAdditionalInformation($this->extractAdditionalInfo($infoInstance, $this->transaction, $order));

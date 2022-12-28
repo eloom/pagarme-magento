@@ -12,7 +12,7 @@ class PagarMe_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplate('pagarme/creditcard/order_info/payment_details.phtml');
+        $this->setTemplate('pagarme/creditcard/info.phtml');
     }
 
     /**
@@ -66,7 +66,6 @@ class PagarMe_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc
         try {
             $this->getTransaction();
         } catch (\Exception $exception) {
-            $this->setTemplate('pagarme/form/payment_method.phtml');
         }
 
         return parent::renderView();

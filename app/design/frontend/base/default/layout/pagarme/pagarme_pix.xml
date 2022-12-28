@@ -11,5 +11,5 @@
         <reference name="content">
           <block type="pagarme_pix/success" name="pagarme_pix.success" template="pagarme/pix/success.phtml"/>
         </reference>
-    </checkout_onepage_success>   
+    </checkout_onepage_success>
 </layout>

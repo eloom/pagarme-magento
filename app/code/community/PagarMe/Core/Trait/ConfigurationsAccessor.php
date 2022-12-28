@@ -109,4 +109,9 @@ trait PagarMe_Core_Trait_ConfigurationsAccessor
     {
         return Mage::getStoreConfig('payment/pagarme_boleto/instructions');
     }
+
+    private function getPixInstructions()
+    {
+        return Mage::getStoreConfig('payment/pagarme_pix/instructions');
+    }
 }

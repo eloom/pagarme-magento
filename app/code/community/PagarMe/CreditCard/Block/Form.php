@@ -9,7 +9,7 @@ class PagarMe_Creditcard_Block_Form extends Mage_Payment_Block_Form_Cc
     protected function _construct()
     {
         parent::_construct();
-        $this->setTemplate('pagarme/form/credit_card.phtml');
+        $this->setTemplate('pagarme/creditcard/form.phtml');
     }
 
     /**

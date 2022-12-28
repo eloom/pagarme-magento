@@ -7,7 +7,7 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
     public function __construct()
     {
         parent::__construct();
-        $this->setTemplate('pagarme/pix/order_info/payment_details.phtml');
+        $this->setTemplate('pagarme/pix/info.phtml');
     }
 
     /**
@@ -38,7 +38,7 @@ class PagarMe_Pix_Block_Info extends Mage_Payment_Block_Info
         try {
             $this->getTransaction();
         } catch (\Exception $exception) {
-            $this->setTemplate('pagarme/form/payment_method.phtml');
+
         }
 
         return parent::renderView();

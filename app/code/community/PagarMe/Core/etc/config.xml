@@ -107,7 +107,8 @@
                 <allowspecific>0</allowspecific>
                 <payment_action>authorize</payment_action>
                 <days_to_expire>1</days_to_expire>
-                <instructions><![CDATA[]]>
+                <instructions>
+                    <![CDATA[O prazo para pagamento será de 1 (um) dia.]]>
                 </instructions>
                 <sort_order>3</sort_order>
             </pagarme_boleto>
