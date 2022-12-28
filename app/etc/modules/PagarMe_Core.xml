@@ -5,7 +5,8 @@
             <active>true</active>
             <codePool>community</codePool>
             <depends>
-                <Mage_Payment />
+                <Mage_Payment/>
+                <Eloom_Bootstrap/>
             </depends>
         </PagarMe_Core>
     </modules>

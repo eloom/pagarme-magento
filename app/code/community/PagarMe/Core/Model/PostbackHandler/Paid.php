@@ -1,8 +1,5 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-use PagarMe_Core_Model_PostbackHandler_Authorized as AuthorizeHandler;
-
 class PagarMe_Core_Model_PostbackHandler_Paid extends PagarMe_Core_Model_PostbackHandler_Base
 {
     /**

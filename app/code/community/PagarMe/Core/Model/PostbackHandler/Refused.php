@@ -1,7 +1,5 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-
 class PagarMe_Core_Model_PostbackHandler_Refused extends PagarMe_Core_Model_PostbackHandler_Base
 {
     const MAGENTO_DESIRED_STATE = Mage_Sales_Model_Order::STATE_CANCELED;
@@ -18,15 +16,12 @@ class PagarMe_Core_Model_PostbackHandler_Refused extends PagarMe_Core_Model_Post
         return self::MAGENTO_DESIRED_STATE;
     }
 
-    /**
-     * @return AbstractTransaction
-     */
     private function retrieveTransaction()
     {
         $sdk = Mage::getModel('pagarme_core/sdk_adapter')
             ->getSdk();
 
-        return $sdk->transaction()->get($this->transactionId);
+        return $sdk->transactions()->get(['id' => $this->transactionId]);
     }
 
     /**
@@ -39,7 +34,7 @@ class PagarMe_Core_Model_PostbackHandler_Refused extends PagarMe_Core_Model_Post
         $canceledHandler = new PagarMe_Core_Model_OrderStatusHandler_Canceled(
             $this->order,
             $transaction,
-            $this->buildRefusedReasonMessage($transaction->getRefuseReason())
+            $this->buildRefusedReasonMessage($transaction->refuse_reason)
         );
         $canceledHandler->handleStatus();
 

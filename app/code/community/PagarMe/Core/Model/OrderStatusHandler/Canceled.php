@@ -1,8 +1,6 @@
 <?php
 
-use PagarMe_Core_Model_OrderStatusHandler_Base as BaseHandler;
-
-class PagarMe_Core_Model_OrderStatusHandler_Canceled extends BaseHandler
+class PagarMe_Core_Model_OrderStatusHandler_Canceled extends PagarMe_Core_Model_OrderStatusHandler_Base
 {
     /**
      * @var string Message to be displayed on Order's history comments
@@ -11,12 +9,12 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends BaseHandler
 
     /**
      * @param Mage_Sales_Model_Order $order
-     * @param \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
+     * @param stdClass $transaction
      * @param string $cancelMessage
      */
     public function __construct(
         Mage_Sales_Model_Order $order,
-        \PagarMe\Sdk\Transaction\AbstractTransaction $transaction,
+        stdClass $transaction,
         $cancelMessage
     ) {
         $this->cancelMessage = $cancelMessage;
@@ -49,9 +47,7 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends BaseHandler
      */
     public function handleStatus()
     {
-        $magentoTransaction = Mage::getModel(
-            'core/resource_transaction'
-        );
+        $magentoTransaction = Mage::getModel('core/resource_transaction');
 
         try {
             if ($this->order->getState() === Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
@@ -74,7 +70,7 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends BaseHandler
             $logMessage = sprintf(
                 'Order %s, transaction %s updated to %s',
                 $this->order->getId(),
-                $this->transaction->getId(),
+                $this->transaction->id,
                 Mage_Sales_Model_Order::STATE_CANCELED
             );
             
@@ -83,7 +79,7 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends BaseHandler
             $logExceptionMessage = sprintf(
                 'Tried to update order %s, transaction %s updated to %s but failed. %s',
                 $this->order->getId(),
-                $this->transaction->getId(),
+                $this->transaction->id,
                 Mage_Sales_Model_Order::STATE_CANCELED,
                 $exception->getMessage()
             );

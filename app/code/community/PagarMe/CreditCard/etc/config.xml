@@ -2,7 +2,7 @@
 <config>
     <modules>
         <PagarMe_Creditcard>
-            <version>3.22.5</version>
+            <version>##eloom.versao##</version>
         </PagarMe_Creditcard>
     </modules>
     <global>

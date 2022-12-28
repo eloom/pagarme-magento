@@ -2,7 +2,7 @@
 <config>
     <modules>
         <PagarMe_Pix>
-            <version>3.22.5</version>
+            <version>##eloom.versao##</version>
         </PagarMe_Pix>
     </modules>
     <global>

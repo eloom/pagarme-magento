@@ -121,7 +121,6 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
 
         $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
-
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
         $this->pagarmeCreditCardHelper = Mage::helper('pagarme_creditcard');
         $this->transactionModel = Mage::getModel('pagarme_core/transaction');
@@ -247,7 +246,8 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      * @return PagarmeCard
      * @throws GenerateCardException
      */
-    public function generateCard($cardHash) {
+    public function generateCard($cardHash)
+    {
         try {
             $card = $this->sdk->cards()->get(['id' => $cardHash]);
             return $card;
@@ -302,7 +302,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $invoice->setGrandTotal($order->getGrandTotal());
         $invoice->setInterestAmount($order->getInterestAmount());
         $invoice->register()->pay();
-        $invoice->setTransactionId($this->transaction->getId());
+        $invoice->setTransactionId($this->transaction->id);
 
         Mage::getModel('core/resource_transaction')
             ->addObject($order)
@@ -316,23 +316,6 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     public function getReferenceKey()
     {
         return $this->transactionModel->getReferenceKey();
-    }
-
-    /**
-     * @param PagarMeException $exception
-     * @return string
-     */
-    private function formatPagarmeExceptions($exception)
-    {
-        $json = json_decode($exception->getMessage());
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return $exception->getMessage();
-        }
-
-        return array_reduce($json->errors, function ($carry, $item) {
-            return is_null($carry)
-                ? $item->message : $carry . "\n" . $item->message;
-        });
     }
 
     /**
@@ -351,23 +334,6 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             ->setCcLast4($card->last_digits);
 
         return $payment;
-    }
-
-    /**
-     * @return string
-     */
-    private function buildRefusedReasonMessage()
-    {
-        $refusedMessage = 'Unauthorized';
-
-        $refusedReason = $this->transaction->getRefuseReason();
-        /*
-        if ($refusedReason === self::REFUSE_REASON_ANTIFRAUD) {
-            $refusedMessage = 'Suspected fraud';
-        }
-        */
-
-        return $refusedMessage;
     }
 
     /**
@@ -410,30 +376,30 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             false
         );
 
-        switch ($this->transaction->getStatus()) {
-            case AbstractTransaction::PROCESSING:
+        switch ($this->transaction->status) {
+            case 'processing':
                 $message = 'Processing on Gateway. Waiting response';
                 $desiredStatus = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
                 break;
-            case AbstractTransaction::REFUSED:
+            case 'refused':
                 throw new Mage_Payment_Model_Info_Exception(
                     $this->buildCheckoutRefusedMessage()
                 );
                 break;
-            case AbstractTransaction::PENDING_REVIEW:
+            case 'pending_review':
                 $message = 'Waiting transaction review on Pagar.me Dashboard';
                 $desiredStatus = Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW;
                 break;
-            case AbstractTransaction::ANALYZING:
+            case 'analyzing':
                 $message = 'Transaction waiting for antifraud analysis';
                 $desiredStatus = Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW;
                 break;
-            case AbstractTransaction::AUTHORIZED:
+            case 'authorized':
                 $message = 'Authorized amount of %s';
                 $desiredStatus = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
                 $notifyCustomer = true;
                 break;
-            case AbstractTransaction::PAID:
+            case 'paid':
                 $message = 'Captured amount of %s';
                 $desiredStatus = Mage_Sales_Model_Order::STATE_PROCESSING;
                 $notifyCustomer = true;
@@ -471,7 +437,8 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         );
     }
 
-    public function authorize(Varien_Object $payment) {
+    public function authorize(Varien_Object $payment)
+    {
         $asyncTransaction = $this->getAsyncTransactionConfig();
         $paymentActionConfig = $this->getPaymentActionConfig();
         $captureTransaction = true;
@@ -514,7 +481,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
 
             $items = [];
-            foreach($order->getAllItems() as $item) {
+            foreach ($order->getAllItems() as $item) {
                 $qtd = $item->getQtyToInvoice();
                 $basePrice = round($item->getPrice(), 2);
                 if (!empty($qtd) && $basePrice > 0) {
@@ -535,6 +502,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                     'amount' => $amount,
                     'capture' => $captureTransaction,
                     'card_hash' => $cardHash,
+                    'installments' => $installments,
                     'customer' => $customer,
                     'billing' => [
                         'name' => $customerName,
@@ -563,15 +531,13 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                         ]
                     ],
                     'items' => $items,
-                    'async' => (bool) $asyncTransaction,
+                    'async' => (bool)$asyncTransaction,
                     'postback_url' => $this->getUrlForPostback(),
                     'metadata' => [
                         'reference_key' => $referenceKey,
                         'order_id' => $order->getIncrementId()
                     ]
                 ]);
-
-            Mage::log($this->transaction);
 
             $order->setPagarmeTransaction($this->transaction);
             $this->checkInstallments($installments);
@@ -588,40 +554,8 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                 $this->transaction
             );
             $infoInstance->setAdditionalInformation($paymentAdditionalInfo);
-        } catch (GenerateCardException $exception) {
-            Mage::log($exception->getMessage());
-            Mage::logException($exception);
-            Mage::throwException($exception->getMessage());
-        } catch (InvalidInstallmentsException $exception) {
-            Mage::log($exception->getMessage());
-            Mage::logException($exception);
-            Mage::throwException($exception->getMessage());
-        } catch (TransactionsInstallmentsDivergent $exception) {
-            Mage::log($exception->getMessage());
-            Mage::logException($exception);
-            Mage::throwException($exception);
-        } catch (CantCaptureTransaction $exception) {
-            Mage::log($exception->getMessage());
-            Mage::logException($exception);
-        } catch (PagarMeException $pagarMeException) {
-            if (substr($pagarMeException->getMessage(), 0, 13) === 'cURL error 28') {
-                $timeoutMessage = sprintf(
-                    'PagarMe API: Operation timed out for order %s',
-                    $order->getId()
-                );
-                Mage::log($timeoutMessage);
-                $payment->setIsTransactionPending(true);
-            } else {
-                Mage::throwException(
-                    $this->formatPagarmeExceptions($pagarMeException)
-                );
-            }
-        } catch (Mage_Payment_Model_Info_Exception $refusedException) {
-            Mage::throwException($refusedException->getMessage());
-        } catch (\Exception $exception) {
-            Mage::logException($exception);
-
-            Mage::throwException($exception);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
 
         $this->transactionModel
@@ -662,8 +596,8 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                 ]);
 
             return $this;
-        } catch (\Exception $exception) {
-            throw $exception;
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
     }
 
@@ -681,8 +615,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
 
         if (!$invoice->canRefund()) {
             Mage::throwException(
-                Mage::helper('pagarme_core')
-                    ->__('Invoice can\'t be refunded.')
+                Mage::helper('pagarme_core')->__('Invoice can\'t be refunded.')
             );
         }
 
@@ -697,16 +630,10 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                         'id' => $this->transaction,
                         'amount' => $amount,
                     ]);
-        } catch (\Exception $exception) {
-            Mage::log('Exception refund:');
-            Mage::logException($exception);
-            $json = json_decode($exception->getMessage());
-            $response = array_reduce($json->errors, function ($carry, $item) {
-                return is_null($carry)
-                    ? $item->message : $carry . "\n" . $item->message;
-            });
-            Mage::throwException($response);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
+
         return $this;
     }
 }

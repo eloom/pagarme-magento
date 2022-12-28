@@ -4,6 +4,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
+    private $logger;
+
     const BOLETO = 'pagarme_boleto';
     protected $_code = self::BOLETO;
     protected $_formBlockType = 'pagarme_boleto/form';
@@ -39,8 +41,9 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     protected $businessCalendar;
 
     public function __construct() {
-        $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
 
+        $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
         $this->businessCalendar = new PagarMe_Core_Helper_BusinessCalendar();
     }
@@ -95,30 +98,6 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     protected function getPostbackCode()
     {
         return self::POSTBACK_ENDPOINT;
-    }
-
-    /**
-     * @param \PagarMe\Sdk\Customer\Customer $customer
-     * @return self
-     */
-    public function createTransaction(
-        \PagarMe\Sdk\Customer\Customer $customer
-    ) {
-        $payment = $this->getInfoInstance();
-        $postbackUrl = $this->getUrlForPostback();
-
-        $quote = Mage::getSingleton('checkout/session')->getQuote();
-        $this->transaction = $this->sdk
-            ->transaction()
-            ->boletoTransaction(
-                $this->pagarmeCoreHelper
-                    ->parseAmountToCents($quote->getGrandTotal()),
-                $customer,
-                $postbackUrl,
-                $payment->getOrder()
-            );
-
-        return $this;
     }
 
     /**
@@ -220,15 +199,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                     $referenceKey,
                     $this->transaction
                 );
-        } catch (\Exception $exception) {
-            Mage::logException($exception);
-            $json = json_decode($exception->getMessage());
-
-            $response = array_reduce($json->errors, function ($carry, $item) {
-                return is_null($carry)
-                    ? $item->message : $carry."\n".$item->message;
-            });
-            Mage::throwException($response);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
 
         return $this;

@@ -4,6 +4,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
+    private $logger;
+
     const PIX = 'pagarme_pix';
     protected $_code = self::PIX;
     protected $_formBlockType = 'pagarme_pix/form';
@@ -35,11 +37,11 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
      */
     protected $businessCalendar;
 
-    public function __construct() {
+    public function __construct()
+    {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
         $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
-
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
-
         $this->businessCalendar = new PagarMe_Core_Helper_BusinessCalendar();
     }
 
@@ -96,41 +98,13 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
     }
 
     /**
-     * @param \PagarMe\Sdk\Customer\Customer $customer
-     * @return self
-     */
-    public function createTransaction(
-        \PagarMe\Sdk\Customer\Customer $customer
-    )
-    {
-        $payment = $this->getInfoInstance();
-        $postbackUrl = $this->getUrlForPostback();
-
-        $quote = Mage::getSingleton('checkout/session')->getQuote();
-        $this->transaction = $this->sdk
-            ->transaction()
-            ->boletoTransaction(
-                $this->pagarmeCoreHelper
-                    ->parseAmountToCents($quote->getGrandTotal()),
-                $customer,
-                $postbackUrl,
-                $payment->getOrder()
-            );
-
-        return $this;
-    }
-
-    /**
      * @param array $data
      *
      * @return $this
      */
     public function assignData($data)
     {
-        $additionalInfoData = [
-            'pagarme_payment_method' => self::PIX
-        ];
-
+        $additionalInfoData = ['pagarme_payment_method' => self::PIX];
         $this->getInfoInstance()->setAdditionalInformation($additionalInfoData);
 
         return $this;
@@ -208,9 +182,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                 ]);
             $this->setOrderAsPendingPayment($amount, $order);
 
-            $infoInstance->setAdditionalInformation(
-                $this->extractAdditionalInfo($infoInstance, $this->transaction, $order)
-            );
+            $infoInstance->setAdditionalInformation($this->extractAdditionalInfo($infoInstance, $this->transaction, $order));
             Mage::getModel('pagarme_core/transaction')
                 ->saveTransactionInformation(
                     $order,
@@ -218,15 +190,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                     $referenceKey,
                     $this->transaction
                 );
-        } catch (\Exception $exception) {
-            Mage::logException($exception);
-            $json = json_decode($exception->getMessage());
-
-            $response = array_reduce($json->errors, function ($carry, $item) {
-                return is_null($carry)
-                    ? $item->message : $carry . "\n" . $item->message;
-            });
-            Mage::throwException($response);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
 
         return $this;

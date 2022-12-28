@@ -1,7 +1,5 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-
 abstract class PagarMe_Core_Model_OrderStatusHandler_Base
 {
     /**
@@ -10,13 +8,13 @@ abstract class PagarMe_Core_Model_OrderStatusHandler_Base
     protected $order;
 
     /**
-     * @var AbstractTransaction
+     * @var stdClass
      */
     protected $transaction;
 
     public function __construct(
         Mage_Sales_Model_Order $order,
-        AbstractTransaction $transaction
+        stdClass               $transaction
     )
     {
         $this->order = $order;

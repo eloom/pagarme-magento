@@ -2,7 +2,7 @@
 <config>
     <modules>
         <PagarMe_Core>
-            <version>3.22.5</version>
+            <version>##eloom.versao##</version>
         </PagarMe_Core>
     </modules>
     <global>
@@ -11,16 +11,6 @@
                 <class>PagarMe_Core_Helper</class>
             </pagarme_core>
         </helpers>
-        <events>
-            <resource_get_tablename>
-                <observers>
-                    <pagarme_core>
-                        <class>PagarMe_Core_Model_Observer_Autoloader</class>
-                        <method>registerSplAutoloader</method>
-                    </pagarme_core>
-                </observers>
-            </resource_get_tablename>
-        </events>
         <models>
             <pagarme_core>
                 <class>PagarMe_Core_Model</class>

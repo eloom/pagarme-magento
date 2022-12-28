@@ -1,7 +1,5 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-
 class PagarMe_Core_Model_PostbackHandler_Factory
 {
     /**
@@ -21,7 +19,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
         $order,
         $transactionId
     ) {
-        if ($status === AbstractTransaction::PAID) {
+        if ($status === 'paid') {
             return new PagarMe_Core_Model_PostbackHandler_Paid(
                 $order,
                 $transactionId,
@@ -29,7 +27,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             );
         }
 
-        if ($status === AbstractTransaction::AUTHORIZED) {
+        if ($status === 'authorized') {
             return new PagarMe_Core_Model_PostbackHandler_Authorized(
                 $order,
                 $transactionId,
@@ -37,7 +35,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             );
         }
 
-        if ($status === AbstractTransaction::REFUNDED) {
+        if ($status === 'refunded') {
             return new PagarMe_Core_Model_PostbackHandler_Refunded(
                 $order,
                 $transactionId,
@@ -45,7 +43,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             );
         }
 
-        if ($status === AbstractTransaction::REFUSED) {
+        if ($status === 'refused') {
             return new PagarMe_Core_Model_PostbackHandler_Refused(
                 $order,
                 $transactionId,
@@ -53,7 +51,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             );
         }
 
-        if ($status === AbstractTransaction::ANALYZING) {
+        if ($status === 'analyzing') {
             return new PagarMe_Core_Model_PostbackHandler_Analyzing(
                 $order,
                 $transactionId,
@@ -61,7 +59,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             );
         }
 
-        if ($status === AbstractTransaction::PENDING_REVIEW) {
+        if ($status === 'pending_review') {
             return new PagarMe_Core_Model_PostbackHandler_PendingReview(
               $order,
               $transactionId,

@@ -1,7 +1,5 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\AbstractTransaction;
-
 class PagarMe_Core_Model_PostbackHandler_PendingReview extends PagarMe_Core_Model_PostbackHandler_Base
 {
     const MAGENTO_DESIRED_STATUS = Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW;
