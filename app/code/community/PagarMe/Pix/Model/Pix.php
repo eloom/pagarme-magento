@@ -68,11 +68,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
         );
         $this->stateObject->setIsNotified(true);
 
-        $this->authorize($payment);
-
-        $payment->setAmountAuthorized(
-            $payment->getOrder()->getTotalDue()
-        );
+        $this->authorize($payment, $payment->getOrder()->getGrandTotal());
+        $payment->setAmountAuthorized($payment->getOrder()->getTotalDue());
 
         return $this;
     }
@@ -137,13 +134,14 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
     }
 
     /**
+     * Authorize payment abstract method
+     *
      * @param Varien_Object $payment
+     * @param float $amount
      *
      * @return Mage_Payment_Model_Abstract
-     *
-     * @throws Mage_Core_Exception
      */
-    public function authorize(Varien_Object $payment)
+    public function authorize(Varien_Object $payment, $amount)
     {
         try {
             $infoInstance = $this->getInfoInstance();
@@ -164,7 +162,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             ]);
 
             $expiration = new DateTime('now + 2 hour');
-            $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($amount);
 
             $this->transaction = $this->sdk
                 ->transactions()
@@ -181,8 +179,6 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                     ]
                 ]);
 
-            Mage::log($this->transaction);
-
             $this->setOrderAsPendingPayment($amount, $order);
 
             $infoInstance->setAdditionalInformation($this->extractAdditionalInfo($infoInstance, $this->transaction, $order));
@@ -195,6 +191,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                 );
         } catch (\Exception $e) {
             $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+            Mage::getSingleton('checkout/session')->setErrorMessage("<ul><li>" . $e->getMessage() . "</li></ul>");
+            Mage::throwException($e->getMessage());
         }
 
         return $this;

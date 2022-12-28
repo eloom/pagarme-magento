@@ -4,11 +4,13 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
+    private $logger;
+
     /**
      * @return type
      */
-    public function _construct()
-    {
+    public function _construct() {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
         return $this->_init('pagarme_core/transaction');
     }
 
@@ -96,6 +98,14 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
                 $this->setPixExpirationDate($transaction->pix_expiration_date);
             } else if ($transaction->payment_method == 'boleto') {
                 $this->saveBoletoInformation($transaction);
+            }
+
+            if ($order->getCanSendNewEmailFlag() && !$order->getEmailSent()) {
+                try {
+                    $order->sendNewOrderEmail();
+                } catch (Exception $e) {
+                    $this->logger->fatal($e->getTraceAsString());
+                }
             }
         }
 

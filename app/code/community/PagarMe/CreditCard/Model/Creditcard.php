@@ -158,7 +158,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             );
         }
 
-        $this->authorize($payment);
+        $this->authorize($payment, $payment->getOrder()->getGrandTotal());
         $payment->setAmountAuthorized($payment->getOrder()->getTotalDue());
 
         return $this;
@@ -282,7 +282,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             return false;
         }
 
-        if ($this->transaction->getStatus() == self::PAID) {
+        if ($this->transaction->status == self::PAID) {
             return true;
         }
 
@@ -346,7 +346,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $contactMessage = $this->pagarmeCreditCardHelper
             ->__('Please, contact your bank for more informations.');
 
-        if ($this->transaction->getRefuseReason() === 'antifraud') {
+        if ($this->transaction->refuse_reason === 'antifraud') {
             $contactMessage = $this->pagarmeCreditCardHelper
                 ->__('Please, contact us for more informations.');
         }
@@ -437,7 +437,15 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         );
     }
 
-    public function authorize(Varien_Object $payment)
+    /**
+     * Authorize payment abstract method
+     *
+     * @param Varien_Object $payment
+     * @param float $amount
+     *
+     * @return Mage_Payment_Model_Abstract
+     */
+    public function authorize(Varien_Object $payment, $amount)
     {
         $asyncTransaction = $this->getAsyncTransactionConfig();
         $paymentActionConfig = $this->getPaymentActionConfig();
@@ -478,7 +486,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                 'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
             ]);
 
-            $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($amount);
 
             $items = [];
             foreach ($order->getAllItems() as $item) {
@@ -554,17 +562,16 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                 $this->transaction
             );
             $infoInstance->setAdditionalInformation($paymentAdditionalInfo);
-        } catch (\Exception $e) {
-            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
-        }
 
-        $this->transactionModel
-            ->saveTransactionInformation(
-                $order,
+            $this->transactionModel->saveTransactionInformation($order,
                 $infoInstance,
                 $referenceKey,
-                $this->transaction
-            );
+                $this->transaction);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+            Mage::getSingleton('checkout/session')->setErrorMessage("<ul><li>" . $e->getMessage() . "</li></ul>");
+            Mage::throwException($e->getMessage());
+        }
 
         return $this;
     }

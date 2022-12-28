@@ -71,11 +71,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
         );
         $this->stateObject->setIsNotified(true);
 
-        $this->authorize($payment);
-
-        $payment->setAmountAuthorized(
-            $payment->getOrder()->getTotalDue()
-        );
+        $this->authorize($payment, $payment->getOrder()->getGrandTotal());
+        $payment->setAmountAuthorized($payment->getOrder()->getTotalDue());
 
         return $this;
     }
@@ -145,13 +142,14 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     }
 
     /**
+     * Authorize payment abstract method
+     *
      * @param Varien_Object $payment
+     * @param float $amount
      *
      * @return Mage_Payment_Model_Abstract
-     *
-     * @throws Mage_Core_Exception
      */
-    public function authorize(Varien_Object $payment) {
+    public function authorize(Varien_Object $payment, $amount) {
         try {
             $order = $payment->getOrder();
             $infoInstance = $this->getInfoInstance();
@@ -169,7 +167,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                 'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
                 'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
             ]);
-            $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($amount);
 
             $this->transaction = $this->sdk
                 ->transactions()
@@ -201,6 +199,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                 );
         } catch (\Exception $e) {
             $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+            Mage::getSingleton('checkout/session')->setErrorMessage("<ul><li>" . $e->getMessage() . "</li></ul>");
+            Mage::throwException($e->getMessage());
         }
 
         return $this;
