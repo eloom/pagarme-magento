@@ -1,11 +1,11 @@
 <?php
 
-class PagarMe_CreditCard_Block_Info extends Mage_Payment_Block_Info_Cc
+class PagarMe_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc
 {
     use PagarMe_Core_Block_Info_Trait;
 
     /**
-     * @var \PagarMe\Sdk\Transaction\CreditCardTransaction
+     * @var stdClass
      */
     private $transaction;
 

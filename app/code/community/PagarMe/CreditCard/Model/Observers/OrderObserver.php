@@ -5,7 +5,7 @@ use \PagarMe\Sdk\Transaction\AbstractTransaction;
 /**
  * @deprecated
  */
-class PagarMe_CreditCard_Model_Observers_OrderObserver
+class PagarMe_Creditcard_Model_Observers_OrderObserver
 {
 
     /**

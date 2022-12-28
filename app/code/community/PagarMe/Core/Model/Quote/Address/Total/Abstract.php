@@ -3,8 +3,6 @@
 abstract class PagarMe_Core_Model_Quote_Address_Total_Abstract
  extends Mage_Sales_Model_Quote_Address_Total_Abstract
 {
-    protected $transaction;
-
     /**
      * @return bool
      */
@@ -15,14 +13,6 @@ abstract class PagarMe_Core_Model_Quote_Address_Total_Abstract
             ->getPost('payment');
 
         if (is_null($paymentData)) {
-            return false;
-        }
-
-        if (!isset($paymentData['pagarme_modal_token'])) {
-            return false;
-        }
-
-        if (empty($paymentData['pagarme_modal_token'])) {
             return false;
         }
 
@@ -41,19 +31,5 @@ abstract class PagarMe_Core_Model_Quote_Address_Total_Abstract
         $shippingAmount = $quote->getShippingAddress()->getShippingAmount();
 
         return $baseSubtotalWithDiscount + $shippingAmount;
-    }
-
-    /**
-     * @return PagarMe\Sdk\PagarMe\AbstractTransaction
-     */
-    protected function getTransaction()
-    {
-        if ($this->transaction == null) {
-            $this->transaction = Mage::app()
-                ->getHelper('pagarme_modal')
-                ->getTransaction();
-        }
-
-        return $this->transaction;
     }
 }

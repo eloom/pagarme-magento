@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <config>
     <modules>
-        <PagarMe_CreditCard>
+        <PagarMe_Creditcard>
             <version>3.22.5</version>
-        </PagarMe_CreditCard>
+        </PagarMe_Creditcard>
     </modules>
     <global>
         <sales>
@@ -32,17 +32,17 @@
         </sales>
         <models>
             <pagarme_creditcard>
-                <class>PagarMe_CreditCard_Model</class>
+                <class>PagarMe_Creditcard_Model</class>
             </pagarme_creditcard>
         </models>
         <blocks>
             <pagarme_creditcard>
-                <class>PagarMe_CreditCard_Block</class>
+                <class>PagarMe_Creditcard_Block</class>
             </pagarme_creditcard>
         </blocks>
         <helpers>
             <pagarme_creditcard>
-                <class>PagarMe_CreditCard_Helper</class>
+                <class>PagarMe_Creditcard_Helper</class>
             </pagarme_creditcard>
         </helpers>
     </global>
@@ -56,11 +56,11 @@
         </layout>
         <translate>
             <modules>
-                <PagarMe_CreditCard>
+                <PagarMe_Creditcard>
                     <files>
-                        <default>PagarMe_CreditCard.csv</default>
+                        <default>PagarMe_Creditcard.csv</default>
                     </files>
-                </PagarMe_CreditCard>
+                </PagarMe_Creditcard>
             </modules>
         </translate>
     </adminhtml>
@@ -74,11 +74,11 @@
         </layout>
         <translate>
             <modules>
-                <PagarMe_CreditCard>
+                <PagarMe_Creditcard>
                     <files>
-                        <default>PagarMe_CreditCard.csv</default>
+                        <default>PagarMe_Creditcard.csv</default>
                     </files>
-                </PagarMe_CreditCard>
+                </PagarMe_Creditcard>
             </modules>
         </translate>
     </frontend>

@@ -6,7 +6,7 @@ class PagarMe_Core_Model_Service_Transaction
      * @var \PagarMe\Client
      */
     protected $sdk;
-    
+
     /**
      * @return \PagarMe\Client
      */
@@ -34,32 +34,33 @@ class PagarMe_Core_Model_Service_Transaction
 
     /**
      * @param int $transactionId
-     * @return \PagarMe\Sdk\Transaction\AbstractTransaction
+     * @return stdClass
      */
     public function getTransactionById($transactionId)
     {
         return $this
             ->getSdk()
-            ->transaction()
-            ->get($transactionId);
+            ->transactions()
+            ->get(['id' => $transactionId]);
     }
 
     /**
-     * @param \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
+     * @param stdClass $transaction
      *
-     * @return \PagarMe\Sdk\Transaction\AbstractTransaction
+     * @return stdClass
      *
      * @throws Exception
      */
-    public function capture(
-        \PagarMe\Sdk\Transaction\AbstractTransaction $transaction
-    ) {
+    public function capture(stdClass $transaction)
+    {
         try {
             return $this->getSdk()
-                ->transaction()
+                ->transactions()
                 ->capture(
-                    $transaction,
-                    $transaction->getAmount()
+                    [
+                        'id' => $transaction,
+                        'amount' => $transaction->amount
+                    ]
                 );
         } catch (Exception $exception) {
             throw $exception;

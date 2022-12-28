@@ -101,8 +101,7 @@
                 <model>pagarme_creditcard/creditcard</model>
                 <order_status>pending_payment</order_status>
                 <allowspecific>0</allowspecific>
-                <payment_methods>credit_card</payment_methods>
-                <payment_action>authorize</payment_action>
+                <payment_action>authorize_capture</payment_action>
                 <max_installments>12</max_installments>
                 <interest_rate>1.49</interest_rate>
                 <min_installment_value>15.00</min_installment_value>
@@ -116,7 +115,6 @@
                 <model>pagarme_boleto/boleto</model>
                 <order_status>authorize</order_status>
                 <allowspecific>0</allowspecific>
-                <payment_methods>boleto</payment_methods>
                 <payment_action>authorize</payment_action>
                 <days_to_expire>1</days_to_expire>
                 <instructions><![CDATA[]]>
@@ -129,21 +127,10 @@
                 <model>pagarme_pix/pix</model>
                 <order_status>authorize</order_status>
                 <allowspecific>0</allowspecific>
-                <payment_methods>pix</payment_methods>
                 <payment_action>authorize</payment_action>
                 <instructions><![CDATA[<p>Ao finalizar seu pedido, você verá o QR Code ou o código do PIX para efetuar o pagamento pelo aplicativo de sua instituição financeira.</p><p>O prazo para pagamento é de 2 horas.</p>]]></instructions>
                 <sort_order>1</sort_order>
             </pagarme_pix>
-            <pagarme_modal>
-                <active>0</active>
-                <title>Pagar.me Modal Checkout</title>
-                <model>pagarme_modal/modal</model>
-                <order_status>pending</order_status>
-                <allowspecific>0</allowspecific>
-                <payment_action>authorize</payment_action>
-                <payment_methods>credit_card,boleto,pix</payment_methods>
-                <sort_order>4</sort_order>
-            </pagarme_modal>
         </payment>
     </default>
 </config>

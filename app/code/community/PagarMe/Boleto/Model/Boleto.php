@@ -4,7 +4,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    protected $_code = 'pagarme_boleto';
+    const BOLETO = 'pagarme_boleto';
+    protected $_code = self::BOLETO;
     protected $_formBlockType = 'pagarme_boleto/form';
     protected $_infoBlockType = 'pagarme_boleto/info';
     protected $_isGateway = true;
@@ -15,7 +16,6 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     protected $_canManageRecurringProfiles = true;
     protected $_isInitializeNeeded = true;
 
-    const PAGARME_BOLETO = 'pagarme_boleto';
     const POSTBACK_ENDPOINT = 'transaction_notification';
 
     /**
@@ -68,10 +68,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
         );
         $this->stateObject->setIsNotified(true);
 
-        $this->authorize(
-            $payment,
-            $payment->getOrder()->getBaseTotalDue()
-        );
+        $this->authorize($payment);
 
         $payment->setAmountAuthorized(
             $payment->getOrder()->getTotalDue()
@@ -132,7 +129,7 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
     public function assignData($data)
     {
         $additionalInfoData = [
-            'pagarme_payment_method' => self::PAGARME_BOLETO
+            'pagarme_payment_method' => self::BOLETO
         ];
 
         $this->getInfoInstance()
@@ -170,47 +167,30 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
 
     /**
      * @param Varien_Object $payment
-     * @param float $amount
      *
      * @return Mage_Payment_Model_Abstract
      *
      * @throws Mage_Core_Exception
      */
-    public function authorize(Varien_Object $payment, $amount)
-    {
+    public function authorize(Varien_Object $payment) {
         try {
+            $order = $payment->getOrder();
             $infoInstance = $this->getInfoInstance();
-            $quote = Mage::getSingleton('checkout/session')->getQuote();
-            if (Mage::getSingleton('admin/session')->isLoggedIn()) {
-                $session = Mage::getSingleton('adminhtml/session_quote');
-                $quote = $session->getQuote();
-            }
-            $billingAddress = $quote->getBillingAddress();
+            $billingAddress = $order->getBillingAddress();
             $referenceKey = $this->getReferenceKey();
 
-            if ($billingAddress == false) {
-                Mage::log(
-                    sprintf(
-                        'Undefined Billing address: %s',
-                        $billingAddress
-                    )
-                );
-                return false;
-            }
             $telephone = $billingAddress->getTelephone();
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
-                'customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
-                'customer_document_number' => $quote->getCustomerTaxvat(),
-                'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
-                'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
-                'customer_email' => $quote->getCustomerEmail(),
+                'customer_type' => $this->pagarmeCoreHelper->getCustomerType($order->getCustomerTaxvat()),
+                'customer_document_number' => $order->getCustomerTaxvat(),
+                'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($order->getCustomerTaxvat()),
+                'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($order),
+                'customer_email' => $order->getCustomerEmail(),
                 'customer_address_country' => $billingAddress->getCountry(),
                 'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
                 'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
             ]);
-
-            $order = $payment->getOrder();
-            $amount = $this->pagarmeCoreHelper->parseAmountToCents($quote->getGrandTotal());
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
 
             $this->transaction = $this->sdk
                 ->transactions()

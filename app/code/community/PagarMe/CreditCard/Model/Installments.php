@@ -1,6 +1,6 @@
 <?php
 
-class PagarMe_CreditCard_Model_Installments
+class PagarMe_Creditcard_Model_Installments
 {
     /**
      * @var \PagarMe\Client
@@ -42,7 +42,8 @@ class PagarMe_CreditCard_Model_Installments
         $interestRate = 0,
         $maxInstallments = 12,
         $sdk = null
-    ) {
+    )
+    {
         $this->sdk = $sdk;
         $this->amount = $amount;
         $this->installments = $installments;
@@ -57,12 +58,14 @@ class PagarMe_CreditCard_Model_Installments
     private function calculate()
     {
         return $this->sdk
-            ->calculation()
-            ->calculateInstallmentsAmount(
-                $this->amount,
-                $this->interestRate,
-                $this->freeInstallments,
-                $this->maxInstallments
+            ->transactions()
+            ->calculateInstallments(
+                [
+                    'amount' => $this->amount,
+                    'free_installments' => $this->freeInstallments,
+                    'max_installments' => $this->maxInstallments,
+                    'interest_rate' => $this->interestRate
+                ]
             );
     }
 
@@ -82,8 +85,11 @@ class PagarMe_CreditCard_Model_Installments
     public function getInstallmentTotalAmount($installment)
     {
         $installments = $this->calculate();
-
-        return $installments[$installment]['total_amount'];
+        foreach ($installments->installments as $info) {
+            if ($installment == $info->installment) {
+                return $info->amount;
+            }
+        }
     }
 
     /**

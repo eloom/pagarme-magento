@@ -7,7 +7,7 @@ class PagarMe_Core_Model_Quote_Address_Total_CreditCardInterestAmount
 
     public function __construct()
     {
-        $this->setCode('pagarme_modal_credit_card');
+        $this->setCode('pagarme_creditcard');
     }
 
     /**

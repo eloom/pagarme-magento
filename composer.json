@@ -41,11 +41,11 @@
                 "app/etc/modules/PagarMe_Boleto.xml"
             ],
             ["app/etc/modules/PagarMe_Core.xml", "app/etc/modules/PagarMe_Core.xml"],
-            ["app/etc/modules/PagarMe_CreditCard.xml", "app/etc/modules/PagarMe_CreditCard.xml"],
+            ["app/etc/modules/PagarMe_Creditcard.xml", "app/etc/modules/PagarMe_Creditcard.xml"],
             ["app/etc/modules/PagarMe_Modal.xml", "app/etc/modules/PagarMe_Modal.xml"],
             ["app/locale/pt_BR/PagarMe_Boleto.csv", "app/locale/pt_BR/PagarMe_Boleto.csv"],
             ["app/locale/pt_BR/PagarMe_Core.csv", "app/locale/pt_BR/PagarMe_Core.csv"],
-            ["app/locale/pt_BR/PagarMe_CreditCard.csv", "app/locale/pt_BR/PagarMe_CreditCard.csv"],
+            ["app/locale/pt_BR/PagarMe_Creditcard.csv", "app/locale/pt_BR/PagarMe_Creditcard.csv"],
             ["app/locale/pt_BR/PagarMe_Modal.csv", "app/locale/pt_BR/PagarMe_Modal.csv"],
             ["js/pagarme/*", "js/pagarme/"],
             ["skin/frontend/base/default/pagarme/*", "skin/frontend/base/default/pagarme/"]

@@ -103,16 +103,16 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @param Mage_Sales_Model_Quote $quote
+     * @param Mage_Sales_Model_Order $order
      *
      * @return string
      */
-    public function getCustomerNameFromQuote($quote)
+    public function getCustomerNameFromQuote($order)
     {
         return implode([
-            $quote->getCustomerFirstname(),
-            $quote->getCustomerMiddlename(),
-            $quote->getCustomerLastname()
+            $order->getCustomerFirstname(),
+            $order->getCustomerMiddlename(),
+            $order->getCustomerLastname()
         ], ' ');
     }
 

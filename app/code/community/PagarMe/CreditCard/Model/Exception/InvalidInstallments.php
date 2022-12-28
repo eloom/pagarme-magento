@@ -4,6 +4,6 @@
  * @package PHP
  */
 
-class PagarMe_CreditCard_Model_Exception_InvalidInstallments extends \Exception
+class PagarMe_Creditcard_Model_Exception_InvalidInstallments extends \Exception
 {
 }

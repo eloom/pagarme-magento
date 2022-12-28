@@ -6,7 +6,7 @@ class PagarMe_Core_Model_Quote_Address_Total_BoletoDiscount extends PagarMe_Core
 
     public function __construct()
     {
-        $this->setCode('pagarme_modal_boleto');
+        $this->setCode('pagarme_boleto');
     }
 
     /**
@@ -16,7 +16,7 @@ class PagarMe_Core_Model_Quote_Address_Total_BoletoDiscount extends PagarMe_Core
      */
     public function getLabel()
     {
-        return Mage::helper('pagarme_modal')->__('Discount');
+        return Mage::helper('pagarme_boleto')->__('Discount');
     }
 
     /**

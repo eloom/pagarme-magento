@@ -1,9 +1,9 @@
 <?php
 
-use PagarMe_CreditCard_Model_Installments as Installments;
+use PagarMe_Creditcard_Model_Installments as Installments;
 
 // @codingStandardsIgnoreLine
-class PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount extends Mage_Sales_Model_Quote_Address_Total_Abstract
+class PagarMe_Creditcard_Model_Quote_Address_Total_CreditCardInterestAmount extends Mage_Sales_Model_Quote_Address_Total_Abstract
 {
 
     use PagarMe_Core_Trait_ConfigurationsAccessor;
@@ -33,7 +33,7 @@ class PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount exte
      *
      * @param Mage_Sales_Model_Quote_Address $address
      *
-     * @return PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount
+     * @return PagarMe_Creditcard_Model_Quote_Address_Total_CreditCardInterestAmount
      */
     public function collect(Mage_Sales_Model_Quote_Address $address)
     {
@@ -59,7 +59,7 @@ class PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount exte
     /**
      * @param Mage_Sales_Model_Quote_Address $address
      *
-     * @return PagarMe_CreditCard_Model_Quote_Address_Total_CreditCardInterestAmount
+     * @return PagarMe_Creditcard_Model_Quote_Address_Total_CreditCardInterestAmount
      */
     public function fetch(Mage_Sales_Model_Quote_Address $address)
     {

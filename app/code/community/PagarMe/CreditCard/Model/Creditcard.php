@@ -1,23 +1,24 @@
 <?php
 
 use PagarMe\Exceptions\PagarMeException;
-use PagarMe_CreditCard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
-use PagarMe_CreditCard_Model_Exception_GenerateCard as GenerateCardException;
-use PagarMe_CreditCard_Model_Exception_TransactionsInstallmentsDivergent as TransactionsInstallmentsDivergent;
-use PagarMe_CreditCard_Model_Exception_CantCaptureTransaction as CantCaptureTransaction;
+use PagarMe_Creditcard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
+use PagarMe_Creditcard_Model_Exception_TransactionsInstallmentsDivergent as TransactionsInstallmentsDivergent;
+use PagarMe_Creditcard_Model_Exception_CantCaptureTransaction as CantCaptureTransaction;
 use PagarMe_Core_Model_System_Config_Source_PaymentAction as PaymentActionConfig;
 
-class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPaymentMethod
+class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPaymentMethod
 {
+
+    private $logger;
 
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    const CREDITCARD = 'pagarme_creditcard';
+    const CC = 'pagarme_creditcard';
 
     /**
      * @var string
      */
-    protected $_code = 'pagarme_creditcard';
+    protected $_code = self::CC;
 
     /**
      * @var string
@@ -90,7 +91,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     protected $pagarmeCoreHelper;
 
     /**
-     * @var PagarMe_CreditCard_Helper_Data
+     * @var PagarMe_Creditcard_Helper_Data
      */
     protected $pagarmeCreditCardHelper;
 
@@ -115,7 +116,10 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     const AUTHORIZED = 'authorized';
     const PAID = 'paid';
 
-    public function __construct() {
+    public function __construct()
+    {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
+
         $this->sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
 
         $this->pagarmeCoreHelper = Mage::helper('pagarme_core');
@@ -137,7 +141,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $this->stateObject = $stateObject;
 
         $paymentActionConfig = $this->getPaymentActionConfig();
-        $asyncTransactionConfig = (bool) $this->getAsyncTransactionConfig();
+        $asyncTransactionConfig = (bool)$this->getAsyncTransactionConfig();
         $payment = $this->getInfoInstance();
 
         $this->stateObject->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
@@ -155,23 +159,15 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             );
         }
 
-        if ($paymentAction ===
-            Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE
-        ) {
-            $this->authorize(
-                $payment,
-                $payment->getOrder()->getBaseTotalDue()
-            );
-            $payment->setAmountAuthorized(
-                $payment->getOrder()->getTotalDue()
-            );
-        }
+        $this->authorize($payment);
+        $payment->setAmountAuthorized($payment->getOrder()->getTotalDue());
+
         return $this;
     }
 
     /**
      * @param \PagarMe\Client $sdk
-     * @return \PagarMe_CreditCard_Model_Creditcard
+     * @return \PagarMe_Creditcard_Model_Creditcard
      *
      * @codeCoverageIgnore
      */
@@ -183,21 +179,12 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     }
 
     /**
-     * @param Mage_Sales_Model_Quote $quote
-     *
-     * @return void
-     */
-    public function setQuote(Mage_Sales_Model_Quote $quote)
-    {
-        $this->quote = $quote;
-    }
-
-    /**
      * @param stdClass $transaction
      *
      * @return void
      */
-    public function setTransaction(stdClass $transaction) {
+    public function setTransaction(stdClass $transaction)
+    {
         $this->transaction = $transaction;
     }
 
@@ -236,9 +223,9 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      *
      * @param int $installments
      *
+     * @return void
      * @throws InvalidInstallmentsException
      *
-     * @return void
      */
     public function isInstallmentsValid($installments)
     {
@@ -267,47 +254,18 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         }
     }
 
-    private function getTestCard()
-    {
-        $card = null;
-        if ($this->isDeveloperModeEnabled()) {
-            $card = $this->sdk->card()->create(
-                '4242424242424242',
-                'Livia Nascimento',
-                '0224',
-                '123'
-            );
-        }
-
-        return $card;
-    }
-
     /**
      * @param string $cardHash
      *
      * @return PagarmeCard
      * @throws GenerateCardException
      */
-    public function generateCard($cardHash)
-    {
+    public function generateCard($cardHash) {
         try {
-            $card = $this->sdk
-                ->card()
-                ->createFromHash($cardHash);
+            $card = $this->sdk->cards()->get(['id' => $cardHash]);
             return $card;
-        } catch (\Exception $exception) {
-            $card = $this->getTestCard();
-            if ($card instanceof \PagarMe\Sdk\Card\Card) {
-                return $card;
-            }
-            $json = json_decode($exception->getMessage());
-
-            $response = array_reduce($json->errors, function ($carry, $item) {
-                return is_null($carry)
-                    ? $item->message : $carry."\n".$item->message;
-            });
-
-            throw new GenerateCardException($response);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
     }
 
@@ -386,7 +344,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
 
         return array_reduce($json->errors, function ($carry, $item) {
             return is_null($carry)
-                ? $item->message : $carry."\n".$item->message;
+                ? $item->message : $carry . "\n" . $item->message;
         });
     }
 
@@ -455,7 +413,8 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      */
     private function handlePaymentStatus(
         Mage_Sales_Model_Order_Payment $payment
-    ) {
+    )
+    {
         $order = $payment->getOrder();
         $notifyCustomer = false;
         $amount = Mage::helper('core')->currency(
@@ -515,7 +474,8 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     private function getPaymentAdditionalInformation(
         $infoInstance,
         $transaction
-    ) {
+    )
+    {
         return array_merge(
             $infoInstance->getAdditionalInformation(),
             [
@@ -524,8 +484,7 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         );
     }
 
-    public function authorize(Varien_Object $payment, $amount)
-    {
+    public function authorize(Varien_Object $payment) {
         $asyncTransaction = $this->getAsyncTransactionConfig();
         $paymentActionConfig = $this->getPaymentActionConfig();
         $captureTransaction = true;
@@ -537,50 +496,78 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $order->setCapture($paymentActionConfig);
         $referenceKey = $this->getReferenceKey();
         $cardHash = $infoInstance->getAdditionalInformation('card_hash');
-        $installments = (int)$infoInstance->getAdditionalInformation(
-            'installments'
-        );
+        $installments = (int)$infoInstance->getAdditionalInformation('installments');
 
-        $this->quote = $order->getQuote();
-        $billingAddress = $this->quote->getBillingAddress();
+        $billingAddress = $order->getBillingAddress();
+        $shippingAddress = null;
+        if ($order->getIsVirtual()) {
+            $shippingAddress = $order->getBillingAddress();
+        } else {
+            $shippingAddress = $order->getShippingAddress();
+        }
 
         try {
             $this->isInstallmentsValid($installments);
-            $card = $this->generateCard($cardHash);
-
-            if ($billingAddress == false) {
-                $this->throwBillingException($billingAddress);
-                return false;
-            }
+            //$card = $this->generateCard($cardHash); // FIXME: rever
 
             $telephone = preg_replace("/[^0-9]/", "", $billingAddress->getTelephone());
+            $customerName = $this->pagarmeCoreHelper->getCustomerNameFromQuote($order);
 
-            $customerPagarMe = $this->buildCustomerInformation(
-                $this->quote,
-                $billingAddress,
-                $telephone
-            );
+            $customer = $this->pagarmeCoreHelper->prepareCustomerData([
+                'customer_type' => $this->pagarmeCoreHelper->getCustomerType($order->getCustomerTaxvat()),
+                'customer_document_number' => $order->getCustomerTaxvat(),
+                'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($order->getCustomerTaxvat()),
+                'customer_name' => $customerName,
+                'customer_email' => $order->getCustomerEmail(),
+                'customer_address_country' => $billingAddress->getCountry(),
+                'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
+                'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone),
+            ]);
 
-            $postbackUrl = $this->getUrlForPostback();
-
-            $extraAttributes = [
-                'async' => (bool)$asyncTransaction,
-                'reference_key' => $referenceKey
-            ];
+            $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
 
             $this->transaction = $this->sdk
-                ->transaction()
-                //->setPaymentMethod(CreditCardTransaction::PAYMENT_METHOD)
-                ->creditCardTransaction(
-                    $this->pagarmeCoreHelper->parseAmountToCents($amount),
-                    $card,
-                    $customerPagarMe,
-                    $installments,
-                    $captureTransaction,
-                    $postbackUrl,
-                    ['order_id' => $order->getIncrementId()],
-                    $extraAttributes
-                );
+                ->transactions()
+                ->create([
+                    'payment_method' => 'credit_card',
+                    'amount' => $this->pagarmeCoreHelper->parseAmountToCents($amount),
+                    'capture' => $captureTransaction,
+                    'card_hash' => $cardHash,
+                    'customer' => $customer,
+                    'billing' => [
+                        'name' => $customerName,
+                        'address' => [
+                            'country' => strtolower($billingAddress->getCountry()),
+                            'street' => $billingAddress->getStreet(1),
+                            'street_number' => $billingAddress->getStreet(2),
+                            'state' => $billingAddress->getRegionCode(),
+                            'city' => $billingAddress->getCity(),
+                            'neighborhood' => $billingAddress->getStreet(3),
+                            'zipcode' => $billingAddress->getPostcode()
+                        ]
+                    ],
+                    'shipping' => [
+                        'name' => $customerName,
+                        'fee' => $this->pagarmeCoreHelper->parseAmountToCents($order->getShippingAmount()),
+                        'expedited' => false,
+                        'address' => [
+                            'country' => strtolower($shippingAddress->getCountry()),
+                            'street' => $shippingAddress->getStreet(1),
+                            'street_number' => $shippingAddress->getStreet(2),
+                            'state' => $shippingAddress->getRegionCode(),
+                            'city' => $shippingAddress->getCity(),
+                            'neighborhood' => $shippingAddress->getStreet(3),
+                            'zipcode' => $shippingAddress->getPostcode()
+                        ]
+                    ],
+                    'async' => (bool) $asyncTransaction,
+                    'postback_url' => $this->getUrlForPostback(),
+                    'metadata' => [
+                        'reference_key' => $referenceKey
+                    ]
+                ]);
+
+            Mage::log($this->transaction);
 
             $order->setPagarmeTransaction($this->transaction);
             $this->checkInstallments($installments);
@@ -658,28 +645,20 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     public function capture(Varien_Object $payment, $amount)
     {
         $order = $payment->getOrder();
-        $integerAmount = Mage::helper('pagarme_core')
-            ->parseAmountToCents($amount);
+        $integerAmount = Mage::helper('pagarme_core')->parseAmountToCents($amount);
 
-        $transactionId = Mage::getModel(
-            'pagarme_core/service_order'
-        )->getTransactionIdByOrder($order);
+        $transactionId = Mage::getModel('pagarme_core/service_order')->getTransactionIdByOrder($order);
 
-        $transactionModel = Mage::getModel(
-            'pagarme_core/service_transaction'
-        );
+        $transactionModel = Mage::getModel('pagarme_core/service_transaction');
 
         try {
-            $this->transaction = $transactionModel->getTransactionById(
-                $transactionId
-            );
+            $this->transaction = $transactionModel->getTransactionById($transactionId);
 
-            $this->transaction = $this->sdk
-                ->transaction()
-                ->capture(
-                    $this->transaction,
-                    $integerAmount
-                );
+            $this->transaction = $this->sdk->transactions()
+                ->capture([
+                    'id' => $this->transaction,
+                    'amount' => $integerAmount
+                ]);
 
             return $this;
         } catch (\Exception $exception) {
@@ -687,38 +666,11 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         }
     }
 
-    private function throwBillingException($billingAddress)
-    {
-        Mage::log(
-            sprintf(
-                Mage::helper('pagarme_core')
-                    ->__('Undefined Billing address: %s'),
-                $billingAddress
-            )
-        );
-    }
-
-    private function buildCustomerInformation($quote, $billingAddress, $telephone)
-    {
-        $customer = $this->pagarmeCoreHelper->prepareCustomerData([
-            'customer_type' => $this->pagarmeCoreHelper->getCustomerType($quote->getCustomerTaxvat()),
-            'customer_document_number' => $quote->getCustomerTaxvat(),
-            'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($quote->getCustomerTaxvat()),
-            'customer_name' => $this->pagarmeCoreHelper->getCustomerNameFromQuote($quote),
-            'customer_email' => $quote->getCustomerEmail(),
-            'customer_address_country' => $billingAddress->getCountry(),
-            'customer_phone_ddd' => $this->pagarmeCoreHelper->getDddFromPhoneNumber($telephone),
-            'customer_phone_number' => $this->pagarmeCoreHelper->getPhoneWithoutDdd($telephone)
-        ]);
-
-        return $customer;
-    }
-
     /**
      * @param Varien_Object $payment
      * @param float $amount
-     * @throws \Exception
      * @return $this
+     * @throws \Exception
      */
     public function refund(Varien_Object $payment, $amount)
     {
@@ -733,27 +685,24 @@ class PagarMe_CreditCard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             );
         }
 
-        $amount = Mage::helper('pagarme_core')
-            ->parseAmountToCents($amount);
+        $amount = Mage::helper('pagarme_core')->parseAmountToCents($amount);
 
         try {
-            $this->transaction = $this->sdk
-                ->transaction()
-                ->get($invoice->getTransactionId());
+            $this->transaction = $this->sdk->transactions()->get(['id' => $invoice->getTransactionId()]);
 
-            $this->sdk
-                ->transaction()
-                ->creditCardRefund(
-                    $this->transaction,
-                    $amount
-                );
+            $this->sdk->transactions()
+                ->refund(
+                    [
+                        'id' => $this->transaction,
+                        'amount' => $amount,
+                    ]);
         } catch (\Exception $exception) {
             Mage::log('Exception refund:');
             Mage::logException($exception);
             $json = json_decode($exception->getMessage());
             $response = array_reduce($json->errors, function ($carry, $item) {
                 return is_null($carry)
-                    ? $item->message : $carry."\n".$item->message;
+                    ? $item->message : $carry . "\n" . $item->message;
             });
             Mage::throwException($response);
         }

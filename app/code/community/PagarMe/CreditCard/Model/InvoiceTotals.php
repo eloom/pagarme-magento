@@ -1,8 +1,8 @@
 <?php
 
-use PagarMe_CreditCard_Model_Installments as Installments;
+use PagarMe_Creditcard_Model_Installments as Installments;
 
-class PagarMe_CreditCard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invoice_Total_Abstract
+class PagarMe_Creditcard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invoice_Total_Abstract
 {
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
@@ -14,7 +14,7 @@ class PagarMe_CreditCard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invo
     /**
      * @param Mage_Sales_Model_Order_Invoice $invoice
      *
-     * @return PagarMe_CreditCard_Model_InvoiceTotals
+     * @return PagarMe_Creditcard_Model_InvoiceTotals
      */
     public function collect(Mage_Sales_Model_Order_Invoice $invoice)
     {
