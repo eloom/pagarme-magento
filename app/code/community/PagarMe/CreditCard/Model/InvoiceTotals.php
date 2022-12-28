@@ -58,11 +58,10 @@ class PagarMe_Creditcard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invo
             $invoice->getGrandTotal() + $this->order->getShippingAmount();
 
         $installments = new Installments(
-            Mage::helper('pagarme_core')
-                ->parseAmountToCents($orderTotal),
-            $transaction->getInstallments(),
+            Mage::helper('pagarme_core')->parseAmountToCents($orderTotal),
+            $transaction->installments,
             $this->getFreeInstallmentStoreConfig(),
-            $transaction->getInterestRate(),
+            $transaction->interest_rate,
             $this->getMaxInstallmentStoreConfig(),
             $sdk
         );

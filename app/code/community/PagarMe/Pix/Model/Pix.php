@@ -131,8 +131,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
             'pagarme_payment_method' => self::PIX
         ];
 
-        $this->getInfoInstance()
-            ->setAdditionalInformation($additionalInfoData);
+        $this->getInfoInstance()->setAdditionalInformation($additionalInfoData);
 
         return $this;
     }
@@ -160,8 +159,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
      */
     public function getReferenceKey()
     {
-        return Mage::getModel('pagarme_core/transaction')
-            ->getReferenceKey();
+        return Mage::getModel('pagarme_core/transaction')->getReferenceKey();
     }
 
     /**
@@ -204,7 +202,8 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
                     'async' => false,
                     'postback_url' => $this->getUrlForPostback(),
                     'metadata' => [
-                        'reference_key' => $referenceKey
+                        'reference_key' => $referenceKey,
+                        'order_id' => $order->getIncrementId()
                     ]
                 ]);
             $this->setOrderAsPendingPayment($amount, $order);

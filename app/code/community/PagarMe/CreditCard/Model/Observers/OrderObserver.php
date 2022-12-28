@@ -20,17 +20,11 @@ class PagarMe_Creditcard_Model_Observers_OrderObserver
             return;
         }
 
-        if (
-            $this->isAuthorizeAndCapture($order) &&
-            $pagarmeTransaction->isPaid()
-        ) {
+        if ($this->isAuthorizeAndCapture($order) && $pagarmeTransaction->status == 'paid') {
             $this->createInvoice($order);
         }
 
-        if (
-            $this->isAuthorizeAndCapture($order) &&
-            $pagarmeTransaction->isRefused()
-        ) {
+        if ($this->isAuthorizeAndCapture($order) && $pagarmeTransaction->status == 'refused') {
             $this->setStateForRefusedTransaction($order);
         }
     }

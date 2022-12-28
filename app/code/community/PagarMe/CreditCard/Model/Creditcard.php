@@ -166,19 +166,6 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     }
 
     /**
-     * @param \PagarMe\Client $sdk
-     * @return \PagarMe_Creditcard_Model_Creditcard
-     *
-     * @codeCoverageIgnore
-     */
-    public function setSdk(PagarMe\Client $sdk)
-    {
-        $this->sdk = $sdk;
-
-        return $this;
-    }
-
-    /**
      * @param stdClass $transaction
      *
      * @return void
@@ -276,7 +263,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
      */
     public function checkInstallments($installments)
     {
-        if ($this->transaction->getInstallments() != $installments) {
+        if ($this->transaction->installments != $installments) {
             $message = $this->pagarmeCoreHelper->__(
                 'Installments is Diverging'
             );
@@ -526,11 +513,26 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
 
             $amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getGrandTotal());
 
+            $items = [];
+            foreach($order->getAllItems() as $item) {
+                $qtd = $item->getQtyToInvoice();
+                $basePrice = round($item->getPrice(), 2);
+                if (!empty($qtd) && $basePrice > 0) {
+                    $items[] = [
+                        'id' => $item->getProductId(),
+                        'title' => substr($item->getName(), 0, 255),
+                        'unit_price' => $this->pagarmeCoreHelper->parseAmountToCents($basePrice),
+                        'quantity' => $qtd,
+                        'tangible' => $item->getTypeID() != 'virtual'
+                    ];
+                }
+            }
+
             $this->transaction = $this->sdk
                 ->transactions()
                 ->create([
                     'payment_method' => 'credit_card',
-                    'amount' => $this->pagarmeCoreHelper->parseAmountToCents($amount),
+                    'amount' => $amount,
                     'capture' => $captureTransaction,
                     'card_hash' => $cardHash,
                     'customer' => $customer,
@@ -560,10 +562,12 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                             'zipcode' => preg_replace('/\D/', '', $shippingAddress->getPostcode())
                         ]
                     ],
+                    'items' => $items,
                     'async' => (bool) $asyncTransaction,
                     'postback_url' => $this->getUrlForPostback(),
                     'metadata' => [
-                        'reference_key' => $referenceKey
+                        'reference_key' => $referenceKey,
+                        'order_id' => $order->getIncrementId()
                     ]
                 ]);
 
@@ -572,15 +576,12 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             $order->setPagarmeTransaction($this->transaction);
             $this->checkInstallments($installments);
 
-            if ($this->transaction->isPaid()) {
+            if ($this->transaction->status == 'paid') {
                 $this->createInvoice($order);
             }
 
             $payment = $this->handlePaymentStatus($payment);
-            $payment = $this->insertCardInfosOnPayment(
-                $payment,
-                $this->transaction->getCard()
-            );
+            $payment = $this->insertCardInfosOnPayment($payment, $this->transaction->card);
 
             $paymentAdditionalInfo = $this->getPaymentAdditionalInformation(
                 $infoInstance,

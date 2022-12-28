@@ -203,7 +203,8 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
                     'async' => false,
                     'postback_url' => $this->getUrlForPostback(),
                     'metadata' => [
-                        'reference_key' => $referenceKey
+                        'reference_key' => $referenceKey,
+                        'order_id' => $order->getIncrementId()
                     ]
                 ]);
 
