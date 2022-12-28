@@ -543,7 +543,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                             'state' => $billingAddress->getRegionCode(),
                             'city' => $billingAddress->getCity(),
                             'neighborhood' => $billingAddress->getStreet(3),
-                            'zipcode' => $billingAddress->getPostcode()
+                            'zipcode' => preg_replace('/\D/', '', $billingAddress->getPostcode())
                         ]
                     ],
                     'shipping' => [
@@ -557,7 +557,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
                             'state' => $shippingAddress->getRegionCode(),
                             'city' => $shippingAddress->getCity(),
                             'neighborhood' => $shippingAddress->getStreet(3),
-                            'zipcode' => $shippingAddress->getPostcode()
+                            'zipcode' => preg_replace('/\D/', '', $shippingAddress->getPostcode())
                         ]
                     ],
                     'async' => (bool) $asyncTransaction,
