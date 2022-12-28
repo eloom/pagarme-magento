@@ -2,6 +2,8 @@
 
 class PagarMe_Core_Model_OrderStatusHandler_Canceled extends PagarMe_Core_Model_OrderStatusHandler_Base
 {
+    private $logger;
+
     /**
      * @var string Message to be displayed on Order's history comments
      */
@@ -12,11 +14,8 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends PagarMe_Core_Model_
      * @param stdClass $transaction
      * @param string $cancelMessage
      */
-    public function __construct(
-        Mage_Sales_Model_Order $order,
-        stdClass $transaction,
-        $cancelMessage
-    ) {
+    public function __construct(Mage_Sales_Model_Order $order, stdClass $transaction, $cancelMessage) {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
         $this->cancelMessage = $cancelMessage;
         parent::__construct($order, $transaction);
     }
@@ -66,25 +65,8 @@ class PagarMe_Core_Model_OrderStatusHandler_Canceled extends PagarMe_Core_Model_
 
             $this->cancel();
             $magentoTransaction->addObject($this->order)->save();
-
-            $logMessage = sprintf(
-                'Order %s, transaction %s updated to %s',
-                $this->order->getId(),
-                $this->transaction->id,
-                Mage_Sales_Model_Order::STATE_CANCELED
-            );
-            
-            Mage::log($logMessage);
-        } catch (\Exception $exception) {
-            $logExceptionMessage = sprintf(
-                'Tried to update order %s, transaction %s updated to %s but failed. %s',
-                $this->order->getId(),
-                $this->transaction->id,
-                Mage_Sales_Model_Order::STATE_CANCELED,
-                $exception->getMessage()
-            );
-
-            Mage::logException($logExceptionMessage);
+        } catch (\Exception $e) {
+            $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
         }
         
         return $this->order;

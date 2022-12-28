@@ -1,9 +1,14 @@
 <?php
 
-use \PagarMe\Sdk\Transaction\BoletoTransaction;
-
 class PagarMe_Boleto_Model_UnpaidBoleto
 {
+    private $logger;
+
+    public function __construct()
+    {
+        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
+    }
+
     /**
      * Returns configured timezone on platform
      *
@@ -69,8 +74,9 @@ class PagarMe_Boleto_Model_UnpaidBoleto
      */
     private function cancelOrder(
         Mage_Sales_Model_Order $order,
-        BoletoTransaction $boletoTransaction
-    ) {
+        BoletoTransaction      $boletoTransaction
+    )
+    {
         if (
             $order->getState() ===
             Mage_Sales_Model_Order::STATE_PENDING_PAYMENT
@@ -101,16 +107,8 @@ class PagarMe_Boleto_Model_UnpaidBoleto
                 );
 
                 $this->cancelOrder($order, $transaction);
-            } catch (\Exception $exception) {
-                $logMessage = sprintf(
-                    'Error canceling unpaid boleto order, id: %s, message: %s',
-                    $expiredBoleto->getOrderId(),
-                    $exception->getMessage()
-                );
-
-                Mage::log($logMessage);
-
-                continue;
+            } catch (\Exception $e) {
+                $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
             }
         }
     }
