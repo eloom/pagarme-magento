@@ -10,7 +10,7 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function prepareCustomerData($data) {
         return [
-            'external_id' => '#123456789', // FIXME: colocar código do cliente
+            'external_id' => $data['customer_id'],
             'type' => $data['customer_type'],
             'name' => $data['customer_name'],
             'email' => $data['customer_email'],

@@ -476,6 +476,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             $customerName = $this->pagarmeCoreHelper->getCustomerNameFromQuote($order);
 
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
+                'customer_id' => $order->getCustomerEmail(),
                 'customer_type' => $this->pagarmeCoreHelper->getCustomerType($order->getCustomerTaxvat()),
                 'customer_document_number' => $order->getCustomerTaxvat(),
                 'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($order->getCustomerTaxvat()),

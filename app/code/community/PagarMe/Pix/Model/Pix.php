@@ -151,6 +151,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
 
             $telephone = $billingAddress->getTelephone();
             $customer = $this->pagarmeCoreHelper->prepareCustomerData([
+                'customer_id' => $order->getCustomerEmail(),
                 'customer_type' => $this->pagarmeCoreHelper->getCustomerType($order->getCustomerTaxvat()),
                 'customer_document_number' => $order->getCustomerTaxvat(),
                 'customer_document_type' => $this->pagarmeCoreHelper->getDocumentType($order->getCustomerTaxvat()),

@@ -7,30 +7,30 @@
   <target name="instalar">
     <ant antfile="build.xml" target="_copiar-modulo">
       <property name="ambiente" value="${ambiente}"/>
-      <property name="diretorios" value="${diretorios.EloomPayU}"/>
-      <property name="arquivos" value="${arquivos.EloomPayU}"/>
+      <property name="diretorios" value="${diretorios.PagarMe}"/>
+      <property name="arquivos" value="${arquivos.PagarMe}"/>
     </ant>
   </target>
 
   <target name="remover">
     <ant antfile="build.xml" target="_remover-modulo-publicado">
       <property name="ambiente" value="${ambiente}"/>
-      <property name="diretorios" value="${diretorios.EloomPayU}"/>
-      <property name="arquivos" value="${arquivos.EloomPayU}"/>
+      <property name="diretorios" value="${diretorios.PagarMe}"/>
+      <property name="arquivos" value="${arquivos.PagarMe}"/>
     </ant>
   </target>
 
   <target name="_preparar-pacote">
     <ant antfile="build.xml" target="_remover-modulo-publicado">
       <property name="ambiente" value="${ambiente}"/>
-      <property name="diretorios" value="${diretorios.EloomPayU}"/>
-      <property name="arquivos" value="${arquivos.EloomPayU}"/>
+      <property name="diretorios" value="${diretorios.PagarMe}"/>
+      <property name="arquivos" value="${arquivos.PagarMe}"/>
     </ant>
 
     <ant antfile="build.xml" target="_copiar-modulo">
       <property name="ambiente" value="${ambiente}"/>
-      <property name="diretorios" value="${diretorios.EloomPayU}"/>
-      <property name="arquivos" value="${arquivos.EloomPayU}"/>
+      <property name="diretorios" value="${diretorios.PagarMe}"/>
+      <property name="arquivos" value="${arquivos.PagarMe}"/>
     </ant>
   </target>
 
@@ -44,7 +44,7 @@
   <target name="_compactar-todos-js-css">
     <ant antfile="build.xml" target="_compactar-todos-js-css">
       <property name="ambiente" value="${ambiente}"/>
-      <property name="arquivos" value="${compactar.EloomPayU}"/>
+      <property name="arquivos" value="${compactar.PagarMe}"/>
     </ant>
   </target>
 </project>
