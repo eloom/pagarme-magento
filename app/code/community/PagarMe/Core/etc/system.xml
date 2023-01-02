@@ -90,7 +90,7 @@
                             <label>Async Transaction</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>102</sort_order>
+                            <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -101,7 +101,7 @@
                             <frontend_type>text</frontend_type>
                             <frontend_class>validate-digits-range</frontend_class>
                             <validate>digits-range-1-12</validate>
-                            <sort_order>104</sort_order>
+                            <sort_order>12</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -111,7 +111,7 @@
                             <comment>Example 1.99</comment>
                             <frontend_type>text</frontend_type>
                             <frontend_class>validate-number</frontend_class>
-                            <sort_order>105</sort_order>
+                            <sort_order>13</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -121,7 +121,7 @@
                             <comment>Example 5.00</comment>
                             <frontend_type>text</frontend_type>
                             <frontend_class>validate-number</frontend_class>
-                            <sort_order>106</sort_order>
+                            <sort_order>14</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -130,7 +130,7 @@
                             <label>Free Installments</label>
                             <frontend_type>text</frontend_type>
                             <frontend_class>validate-number</frontend_class>
-                            <sort_order>107</sort_order>
+                            <sort_order>15</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -139,11 +139,19 @@
                             <label>Allowed Credit Card Brands</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>pagarme_core/system_config_source_creditCardBrands</source_model>
-                            <sort_order>108</sort_order>
+                            <sort_order>16</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </allowed_brands>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>99</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                     </fields>
                 </pagarme_creditcard>
                 <pagarme_boleto>
@@ -174,7 +182,7 @@
                             <label>Days to boleto expire</label>
                             <frontend_type>text</frontend_type>
                             <frontend_class>validate-number</frontend_class>
-                            <sort_order>202</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -183,11 +191,19 @@
                             <label>Boleto instructions</label>
                             <frontend_type>textarea</frontend_type>
                             <frontend_class>validate-length maximum-length-255</frontend_class>
-                            <sort_order>203</sort_order>
+                            <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </instructions>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>99</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                     </fields>
                 </pagarme_boleto>
                 <pagarme_pix>
@@ -218,11 +234,19 @@
                             <label>PIX instructions</label>
                             <frontend_type>textarea</frontend_type>
                             <frontend_class>validate-length maximum-length-255</frontend_class>
-                            <sort_order>302</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </instructions>
+                        <sort_order translate="label">
+                            <label>Sort Order</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>99</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sort_order>
                     </fields>
                 </pagarme_pix>
             </groups>

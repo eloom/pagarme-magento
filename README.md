@@ -1,160 +1,65 @@
-<img src="https://avatars1.githubusercontent.com/u/3846050?v=4&s=200" width="127px" height="127px" align="left"/>
+# Pagar.me para Magento 1.9
 
-# Pagar.me Magento
+## Recursos
 
-Módulo de integração Pagar.me para Magento 1.x
+- [x] Pagamento com PIX
+- [x] Pagamento com Cartão de Crédito
+- [x] Pagamento com Boleto Bancário
 
-<br>
+## Dependências
 
-[![Build Status](https://travis-ci.org/pagarme/pagarme-magento.svg?branch=v2)](https://travis-ci.org/pagarme/pagarme-magento)
-[![Coverage Status](https://coveralls.io/repos/github/pagarme/pagarme-magento/badge.svg?branch=v2)](https://coveralls.io/github/pagarme/pagarme-magento?branch=master)
+O módulo [Bootstrap para Magento CE](https://github.com/eloom/bootstrap-magento-ce).
 
-## Requisitos
+## Compatibilidade
 
-- [Magento Community](https://magento.com/products/community-edition) 1.7.x, 1.8.x ou 1.9.x.
-- [PHP](http://php.net) >= 5.4.x
-- Cron
+- [x] Magento 1.9.4.5
+- [x] PHP/PHP-FPM 7.3
+- [x] Pagar.me API Versão 4 (2019-09-01)
 
-## Instalação
-
-### Manual
-
-1. Clique [aqui](https://github.com/pagarme/pagarme-magento/releases) e baixe o arquivo `.zip` de nossa versão mais recente. O arquivo possui o nome parecido com `pagarme-magento-<VERSÃO>.zip`
-2. Descompacte o arquivo **zip** e copie as pastas `app`, `js`, `skin` e `vendor` para a a pasta raiz da sua instalação do Magento
-3. Limpe o cache em `Sistema > Gerenciamento de Cache`
-
-### Composer
-
+## Habilitar composer no Magento 1
 ```
-composer require pagarme/pagarme-magento:^3
+composer init
 ```
-
-## Configuração
-
-1. Acesse o painel administrativo da sua loja
-2. Vá em `Sistema > Configuração > Métodos de Pagamento > Pagar.me`
-3. Informe sua **Chave de API** e sua **Chave de criptografia**
-4. Salve as configurações
-5. Em `Sistema > Configuração > Configuração do cliente > Opções de Nome e Endereço`, altere o valor dos campos:
-* `Número de linhas em um endereço de rua` com valor `4`
-*  `Exibir Tax/Vat` com valor `Habilitado`
-7. Salve as configurações
-8. Vá em `Sistema > Configuração > Catálogo > Inventário > Opções de estoque`
-* Altere a opção `Reajustar Estoque Quando Pedidor for Cancelado` para `Sim`
-
-Você pode acessar as demais instruções de configuração clicando [aqui](https://docs.pagar.me/v2/docs/instalando-modulo-magento)
-
-### Configuração de cancelamento automático de boletos não pagos
-
-Pedidos que forem criados na plataforma com boleto como forma de pagamento,
-deverão ser cancelados após o vencimento. O módulo possui um processo
-automatizado que, identifica os boletos pendentes e, se em **7** dias após a
-data de vencimento não houver o pagamento, o pedido é **cancelado**.
-
-Para que este processo funcione é preciso que as a _cron_ da plataforma seja
-configurada no servidor:
-
-`*/5 * * * * sh /path/to/your/magento/site/root/cron.sh`
-
-A instrução acima irá executar o módulo de gerenciamento de tarefas agendadas
- a cada 5 minutos.
-
-Mais detalhes sobre esta configuração no [link](https://amasty.com/blog/configure-magento-cron-job/)
-
-## Para desenvolvedores - Avançado
-
-### Requisitos
-
-- [Docker](https://docs.docker.com)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [GNU Make (Opcional)](https://www.gnu.org/software/make/)
-
-### Instalando o Magento Community 1.x
-
-1. Clonando o projeto
 ```
-git clone git@github.com:pagarme/pagarme-magento.git
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://packages.firegento.com"
+    }
+]
 ```
 
-2. Preparando o ambiente (containers)
-
-**Obs:** Utilizamos o `make` para tornar a utilização mais amigável mas é possível obter os mesmos resultados executando comandos através dos containers utilizando o `docker-compose`. Para isso basta consultar o `Makefile` do projeto.
-
+## Instalar módulos
 ```
-make
+composer require --update-no-dev magento-hackathon/magento-composer-installer
 ```
+* defina "." como root dir
 
-O comando acima irá:
-- Subir os containers docker
-- Instalar as dependências do projeto através do [Composer](https://getcomposer.org)
-- Habilitar os logs da plataforma (system e exception)
-- Habilitar a exibição de erros da plataforma
-
-### Executando o PHPCS (Code sniffer)
-
+## Instalar SDK do Pagar.me
 ```
-make phpcs target=NOME DO ARQUIVO OU DIRETORIO
+composer require guzzlehttp/guzzle:~6.3
+composer require pagarme/pagarme-php:v4.1.2
 ```
 
-### Executando os testes unitários
+## Gerando o build
 
-```make test-unit```
+Os projetos da élOOm utilizam o [Apache Ant](https://ant.apache.org/) para publicar o projeto nos ambientes de **desenvolvimento** e de **teste** e para gerar os pacotes para o **ambiente de produção**.
 
-### Executando os testes de comportamento
+- Publicando no **ambiente local**
 
-a) Todas as suites de teste
-```make test-e2e```
+ - no arquivo **build-desenv.properties**, informe o path do **Document Root** na propriedade "projetos.path";
 
-b) Uma suite específica. Veja todas as disponíveis no [behat.yml](https://github.com/pagarme/pagarme-magento/blob/v2/behat.yml#L12) do projeto
-```make test-e2e-suite suite=NOME_DA_SUITE```
+ - na raiz deste projeto, execute, no prompt, o comando ```ant -f build-desenv.xml```.
 
-### Acompanhando a execução dos testes de comportamento
 
-1. Instale um cliente VNC. Sugerimos o [Vinagre](https://wiki.gnome.org/Apps/Vinagre)
-2. Conecte-se no servidor.
-*  Utilize `localhost` para o host e `secret` para senha
+	> a tarefa Ant irá copiar todos os arquivos do projeto no seu Magento e limpar a cache.
 
-### Comandos úteis para desenvolvimento
 
-Todos os comandos podem ser conferidos no arquivo [Makefile](https://github.com/pagarme/pagarme-magento/blob/v2/Makefile) do projeto
+- Publicando para o **ambiente de produção**
 
-1. "Matando" os containers
-```
-make down
-```
+ - na raiz deste projeto, execute, no prompt, o comando ```ant -f build-producao.xml```.
 
-2. Acompanhando (tail -f) os logs do magento
-```
-make tailf-system-logs
-ou
-make tailf-exception-logs
-```
 
-3. Recuperando api key (Pagar.me) configurada no módulo
-```
-make get-api-key
-```
+	> a tarefa Ant irá gerar um pacote no formato .zip, no caminho definido na propriedade "projetos.path", do arquivo **build-producao.properties**.
 
-4. Alterando api key (Pagar.me)
-```
-make set-api-key api_key=SUA_API_KEY
-```
-
-### Testando postbacks em ambiente de desenvolvimento
-
-**Requisitos**
-
-- [Ngrok](https://ngrok.com/)
-- Developer mode do magento habilitado ou a variável de ambiente `PAGARME_DEVELOPMENT=enabled`
-
-1. Instale e inicie o ngrok com `ngrok http 80`
-2. Acesse o painel administrativo da loja
-3. Vá `Sistema > Configuração > Métodos de Pagamento > Pagar.me`
-4. Preencha o campo `Postback URL` com a url gerada pelo ngrok
-5. Crie uma transação
-6. Uma vez criada uma transação basta executar alguma operação que invoque um postback: estorno, pagamento de boleto, etc.
-
-### Acessando a loja virtual através do navegador
-
-1. Altere seu arquivo `/etc/hosts` adicionando a entrada `127.0.0.1 magento`
-2. Acesse a loja no navegador utilizando o endereço `http://magento`
+	> os arquivos .css e .js serão comprimidos automáticamente usando o [YUI Compressor](https://yui.github.io/yuicompressor/).
