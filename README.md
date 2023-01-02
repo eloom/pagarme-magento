@@ -8,7 +8,7 @@
 
 ## Dependências
 
-O módulo [Bootstrap para Magento CE](https://github.com/eloom/bootstrap-magento-ce).
+Módulo [Bootstrap para Magento CE](https://github.com/eloom/bootstrap-magento-ce) para gravação de logs com o Log4php.
 
 ## Compatibilidade
 
