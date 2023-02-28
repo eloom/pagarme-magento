@@ -31,7 +31,7 @@ composer init
 
 ## Instalar módulos
 ```
-composer require --update-no-dev magento-hackathon/magento-composer-installer
+composer require --update-no-dev magento-hackathon/magento-composer-installer:^4.0
 ```
 * defina "." como root dir
 
