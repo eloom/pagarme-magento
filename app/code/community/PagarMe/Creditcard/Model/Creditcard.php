@@ -1,9 +1,7 @@
 <?php
 
-use PagarMe\Exceptions\PagarMeException;
 use PagarMe_Creditcard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
 use PagarMe_Creditcard_Model_Exception_TransactionsInstallmentsDivergent as TransactionsInstallmentsDivergent;
-use PagarMe_Creditcard_Model_Exception_CantCaptureTransaction as CantCaptureTransaction;
 use PagarMe_Core_Model_System_Config_Source_PaymentAction as PaymentActionConfig;
 
 class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPaymentMethod
