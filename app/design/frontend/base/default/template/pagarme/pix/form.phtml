@@ -1,0 +1,10 @@
+<?php $code = $this->getMethodCode() ?>
+<ul id="payment_form_<?php echo $code ?>" class="form-list" style="display: none;">
+    <?php if($inst = $this->getInstructions()):?>
+        <li class="note-msg">
+            <ul>
+                <li><span><?php echo $inst; ?></span></li>
+            </ul>
+        </li>
+    <?php endif;?>
+</ul>

@@ -1,0 +1,29 @@
+.pagarme-payment-icons li { background: url(../images/icons.png) no-repeat; margin: 0 !important; width: 51px; height: 32px; display: inline-block; }
+.pagarme-payment-icons li span { display: none; }
+.pagarme-payment-icons li.boleto.on { background-position: 0 -288px; }
+.card-data { display: flex; flex-direction: row-reverse; align-items: center; width: 100%; }
+.card-data > * { flex: 1; }
+.card-wrapper,
+.card-data ul { width: 100% }
+.card-data ul { margin-top: 15px }
+div.card-data-column { flex-direction: column; }
+
+#checkout-payment-method-load dt {
+    display: flex;
+}
+#checkout-payment-method-load dt label {
+    flex: 1;
+}
+#checkout-payment-method-load label[for='p_method_pagarme_boleto']::after,
+#checkout-payment-method-load label[for='p_method_pagarme_creditcard']::after,
+#checkout-payment-method-load label[for='p_method_pagarme_pix']::after {
+    height: 25px;
+    background-repeat: no-repeat;
+    background-position: right 0;
+    background-size: 80px;
+    background-image: url(../images/logo.png);
+    content: " ";
+    position: absolute;
+    right: 0;
+    width: 80px;
+}

@@ -1,0 +1,130 @@
+{
+  "name": "pagarme/pagarme-magento",
+  "description": "Magento 1 module to connect to Pagar.me payment provider with API 2 (v5)",
+  "type": "magento-module",
+  "homepage": "https://github.com/pagarme/pagarme-magento",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "eloom",
+      "email": "contato@eloom.com.br"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "./vendor/pagarme/PagarmeCoreApiLib",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "require": {
+    "php": "~7.3",
+    "pagarme/pagarme-php": "@dev"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8",
+    "squizlabs/php_codesniffer": "3.4.2",
+    "behat/behat": "3.5.0",
+    "behat/mink": "1.7.1",
+    "behat/mink-selenium2-driver": "1.3.1",
+    "behat/mink-extension": "2.3.1",
+    "n98/magerun": "@stable"
+  },
+  "extra": {
+    "map": [
+      [
+        "app/code/community/PagarMe/*",
+        "app/code/community/PagarMe/"
+      ],
+      [
+        "app/design/adminhtml/default/default/layout/pagarme/*",
+        "app/design/adminhtml/default/default/layout/pagarme/"
+      ],
+      [
+        "app/design/adminhtml/default/default/template/pagarme/*",
+        "app/design/adminhtml/default/default/template/pagarme/"
+      ],
+      [
+        "app/design/frontend/base/default/layout/pagarme/*",
+        "app/design/frontend/base/default/layout/pagarme/"
+      ],
+      [
+        "app/design/frontend/base/default/template/pagarme/*",
+        "app/design/frontend/base/default/template/pagarme/"
+      ],
+      [
+        "app/etc/modules/PagarMe_Boleto.xml",
+        "app/etc/modules/PagarMe_Boleto.xml"
+      ],
+      [
+        "app/etc/modules/PagarMe_Core.xml",
+        "app/etc/modules/PagarMe_Core.xml"
+      ],
+      [
+        "app/etc/modules/PagarMe_Creditcard.xml",
+        "app/etc/modules/PagarMe_Creditcard.xml"
+      ],
+      [
+        "app/etc/modules/PagarMe_Modal.xml",
+        "app/etc/modules/PagarMe_Modal.xml"
+      ],
+      [
+        "app/locale/pt_BR/PagarMe_Boleto.csv",
+        "app/locale/pt_BR/PagarMe_Boleto.csv"
+      ],
+      [
+        "app/locale/pt_BR/PagarMe_Core.csv",
+        "app/locale/pt_BR/PagarMe_Core.csv"
+      ],
+      [
+        "app/locale/pt_BR/PagarMe_Creditcard.csv",
+        "app/locale/pt_BR/PagarMe_Creditcard.csv"
+      ],
+      [
+        "app/locale/pt_BR/PagarMe_Pix.csv",
+        "app/locale/pt_BR/PagarMe_Pix.csv"
+      ],
+      [
+        "js/pagarme/*",
+        "js/pagarme/"
+      ],
+      [
+        "skin/frontend/base/default/pagarme/*",
+        "skin/frontend/base/default/pagarme/"
+      ]
+    ]
+  },
+  "archive": {
+    "exclude": [
+      ".coveralls.yml",
+      ".behat.yml",
+      ".travis.yml",
+      "Dockerfile",
+      "forgotten_keys.sh",
+      "LICENSE",
+      "magentosmtp",
+      "phpcsruleset.xml",
+      "phpunit.xml",
+      "start2",
+      "README.md",
+      "CHANGELOG.md",
+      "PULLREQUEST-TEMPLATE.md",
+      "ISSUE-TEMPLATE.md",
+      "CONTRUBUTING.md",
+      "docker-compose.yml",
+      ".env",
+      "tests/",
+      "Makefile",
+      "behat.yml",
+      "CONTRIBUTING.md",
+      ".gitignore",
+      ".circleci/",
+      "composer.json",
+      "composer.lock",
+      "script/",
+      ".github/"
+    ]
+  }
+}

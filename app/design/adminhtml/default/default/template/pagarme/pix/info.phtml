@@ -1,0 +1,25 @@
+<?php
+/**
+ * @see PagarMe_Pix_Block_Info
+ */
+$helper = Mage::helper('pagarme_pix');
+?>
+<h3><?php echo $helper->__('Pagar.me PIX'); ?></h3>
+<table id="pagarme_order_info_payment_details">
+    <tr>
+        <td class="label">
+            <strong>
+                <?php echo $helper->__('Pagar.me Transaction Id');?>
+            </strong>
+        </td>
+        <td style="text-align:right;"><?= $this->transactionId(); ?></td>
+    </tr>
+    <tr>
+        <td class="label">
+            <strong><?php echo $helper->__('QR Code'); ?></strong>
+        </td>
+        <td style="text-align: right" class="value">
+            <?php echo $this->getQrCode(); ?>
+        </td>
+    </tr>
+</table>

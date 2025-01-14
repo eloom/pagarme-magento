@@ -1,0 +1,45 @@
+version: '2'
+
+services:
+    selenium:
+        image: selenium/hub:3.10.0
+        ports:
+            - "4444:4444"
+
+    firefox:
+        image: selenium/node-firefox-debug:2.53.0
+        privileged: true
+        depends_on:
+            - selenium
+        ports:
+            - "5900:5900"
+        environment:
+            - no_proxy=localhost
+            - HUB_PORT_4444_TCP_ADDR=selenium
+            - HUB_PORT_4444_TCP_PORT=4444
+
+    mysql:
+        image: mysql:5.5
+        env_file: .env
+
+    magento:
+        image: magneto:1
+        build:
+            dockerfile: ./Dockerfile
+            context: ./
+        env_file: .env
+        volumes:
+            - .:/opt/docker/magento/module/
+        working_dir: /var/www
+        ports:
+            - "80:80"
+        depends_on:
+            - mysql
+
+    composer:
+        image: pagarme/composer
+        working_dir: /magneto
+        volumes:
+            - .:/magneto
+        command:
+            -  install
