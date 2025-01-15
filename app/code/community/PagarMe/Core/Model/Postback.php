@@ -97,20 +97,20 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
 
     /**
      * @param int $transactionId
-     * @param string $currentStatus
-     * @param string $oldStatus
+     * @param string $status
+     * @param string $type
      *
      * @return Mage_Sales_Model_Order
      * @throws Exception|PagarMe_Core_Model_PostbackHandler_Exception
      */
-    public function processPostback($transactionId, $currentStatus, $oldStatus)
+    public function processPostback($transactionId, $status, $type)
     {
         $order = $this->getOrderService()
             ->getOrderByTransactionId($transactionId);
 
         $postbackHandler = PagarMe_Core_Model_PostbackHandler_Factory::createFromDesiredStatus(
-            $currentStatus,
-            $oldStatus,
+            $status,
+            $type,
             $order,
             $transactionId
         );
@@ -119,11 +119,11 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
     }
 
     /**
+     * @param Mage_Sales_Model_Order $order
+     * @return void
      * @deprecated
      * @see PagarMe_Core_Model_PostbackHandler_Paid::process()
      *
-     * @param Mage_Sales_Model_Order $order
-     * @return void
      */
     public function setOrderAsPaid($order)
     {
@@ -140,11 +140,11 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
     }
 
     /**
+     * @param Mage_Sales_Model_Order $order
+     * @return void
      * @deprecated
      * @see PagarMe_Core_Model_PostbackHandler_Authorized::process()
      *
-     * @param Mage_Sales_Model_Order $order
-     * @return void
      */
     public function setOrderAsAuthorized($order)
     {
@@ -153,7 +153,7 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
             true,
             Mage::helper('sales')->__(
                 'Authorized amount of %s.',
-                substr('R$'.$order->getGrandTotal(), 0, -2)
+                substr('R$' . $order->getGrandTotal(), 0, -2)
             )
         );
 
@@ -163,11 +163,11 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
     }
 
     /**
+     * @param Mage_Sales_Model_Order $order
+     * @return void
      * @deprecated
      * @see \PagarMe_Core_Model_PostbackHandler_Refunded::process()
      *
-     * @param Mage_Sales_Model_Order $order
-     * @return void
      */
     public function setOrderAsRefunded($order)
     {
@@ -191,15 +191,16 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
             $transaction->addObject($creditmemo);
         }
         $transaction->addObject($order)->save();
+        
         return $order;
     }
 
     /**
+     * @param Mage_Sales_Model_Order $order
+     * @return void
      * @deprecated
      * @see \PagarMe_Core_Model_PostbackHandler_Refused::process()
      *
-     * @param Mage_Sales_Model_Order $order
-     * @return void
      */
     public function setOrderAsRefused($order)
     {
@@ -209,11 +210,11 @@ class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
             Mage_Sales_Model_Order::STATE_CANCELED,
             true,
             Mage::helper('pagarme_core')->
-                __('Refused by gateway.')
+            __('Refused by gateway.')
         );
 
         $transaction->addObject($order)->save();
-        
+
         return $order;
     }
 }

@@ -6,7 +6,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
      * Instantiate a PostbackHandler based on desired status
      *
      * @param string $status
-     * @param string $oldStatus
+     * @param string $type
      * @param Mage_Sales_Model_Order $order
      * @param int $transactionId
      *
@@ -15,7 +15,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
      */
     public static function createFromDesiredStatus(
         $status,
-        $oldStatus,
+        $type,
         $order,
         $transactionId
     ) {
@@ -23,7 +23,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_Paid(
                 $order,
                 $transactionId,
-                $oldStatus
+                $type
             );
         }
 
@@ -31,7 +31,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_Authorized(
                 $order,
                 $transactionId,
-                $oldStatus
+                $type
             );
         }
 
@@ -39,7 +39,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_Refunded(
                 $order,
                 $transactionId,
-                $oldStatus
+                $type
             );
         }
 
@@ -47,7 +47,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_Refused(
                 $order,
                 $transactionId,
-                $oldStatus
+                $type
             );
         }
 
@@ -55,7 +55,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_Analyzing(
                 $order,
                 $transactionId,
-                $oldStatus
+                $type
             );
         }
 
@@ -63,7 +63,7 @@ class PagarMe_Core_Model_PostbackHandler_Factory
             return new PagarMe_Core_Model_PostbackHandler_PendingReview(
               $order,
               $transactionId,
-              $oldStatus
+                $type
             );
         }
 

@@ -13,24 +13,25 @@ abstract class PagarMe_Core_Model_PostbackHandler_Base
     protected $transactionId;
 
     /**
-     * @var string $oldStatus Any of PagarMe\Sdk\Transaction\AbstractTransaction
+     * @var string $type Any of PagarMe\Sdk\Transaction\AbstractTransaction
      * statuses
      */
-    protected $oldStatus;
+    protected $type;
 
     /**
      * @param \Mage_Sales_Model_Order $order
      * @param int $transactionId
-     * @param string $oldStatus
+     * @param string $type
      */
     public function __construct(
         \Mage_Sales_Model_Order $order,
-        $transactionId,
-        $oldStatus = null
-    ) {
+                                $transactionId,
+                                $type = null
+    )
+    {
         $this->order = $order;
         $this->transactionId = $transactionId;
-        $this->oldStatus = $oldStatus;
+        $this->type = $type;
     }
 
     /**

@@ -6,7 +6,8 @@ use PagarmeCoreApiLib\Models\CreateOrderItemRequest;
 use PagarmeCoreApiLib\Models\CreatePhoneRequest;
 use PagarmeCoreApiLib\Models\CreatePhonesRequest;
 
-class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract {
+class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract
+{
 
     /**
      * @param array $data
@@ -71,6 +72,18 @@ class PagarMe_Core_Helper_Data extends Mage_Core_Helper_Abstract {
         }
 
         return $addressRequest;
+    }
+
+    /**
+     * @param $order
+     * @param $referenceKey
+     * @return array
+     */
+    public function prepareMetadata($order, $referenceKey) {
+        return [
+            'order_id' => $order->getIncrementId(),
+            'reference_key' => $referenceKey
+        ];
     }
 
     /**

@@ -210,13 +210,19 @@ class PagarMe_Boleto_Model_Boleto extends PagarMe_Core_Model_AbstractPaymentMeth
             $orderRequest->customer = $customer;
             $orderRequest->shipping = $shippingRequest;
             $orderRequest->payments = [$paymentRequest];
+            $orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
             $this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
 
             $this->setOrderAsPendingPayment($amount, $order);
 
             $infoInstance->setAdditionalInformation($this->extractAdditionalInfo($infoInstance, $this->getOrderResponse, $order));
-            Mage::getModel('pagarme_core/transaction')->saveTransactionInformation($order, $infoInstance, $referenceKey, $this->getOrderResponse);
+
+            if ($this->getOrderResponse->charges) {
+                foreach ($this->getOrderResponse->charges as $charge) {
+                    Mage::getModel('pagarme_core/transaction')->saveTransactionInformation($order, $infoInstance, $referenceKey, $charge);
+                }
+            }
         } catch (\Exception $e) {
             $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
             Mage::getSingleton('checkout/session')->setErrorMessage("<ul><li>" . $e->getMessage() . "</li></ul>");

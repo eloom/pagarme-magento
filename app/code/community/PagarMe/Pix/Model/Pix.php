@@ -9,7 +9,8 @@ use PagarmeCoreApiLib\Models\CreateShippingRequest;
 use PagarmeCoreApiLib\Models\GetOrderResponse;
 use PagarmeCoreApiLib\PagarmeCoreApiClient;
 
-class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod {
+class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod
+{
 
     use PagarMe_Core_Trait_ConfigurationsAccessor;
 
@@ -207,6 +208,7 @@ class PagarMe_Pix_Model_Pix extends PagarMe_Core_Model_AbstractPaymentMethod {
             $orderRequest->customer = $customer;
             $orderRequest->shipping = $shippingRequest;
             $orderRequest->payments = [$paymentRequest];
+            $orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
             $this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
 

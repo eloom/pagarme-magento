@@ -449,10 +449,12 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
     public function authorize(Mage_Sales_Model_Order_Payment $payment, $amount)
     {
         $paymentActionConfig = $this->getPaymentActionConfig();
+        /*
         $captureTransaction = 'auth_and_capture';
         if ($paymentActionConfig === PaymentActionConfig::AUTH_ONLY) {
             $captureTransaction = 'auth_only';
         }
+        */
         $infoInstance = $this->getInfoInstance();
         $order = $payment->getOrder();
         $order->setCapture($paymentActionConfig);
@@ -532,6 +534,7 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             $orderRequest->customer = $customer;
             $orderRequest->shipping = $shippingRequest;
             $orderRequest->payments = [$paymentRequest];
+            $orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
             $this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
 
@@ -543,12 +546,16 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
             }
 
             $this->handlePaymentStatus($payment);
-            $this->insertCardInfosOnPayment($payment, $this->getOrderResponse->card);
+            //$this->insertCardInfosOnPayment($payment, $this->getOrderResponse->card);
 
-            $paymentAdditionalInfo = $this->getPaymentAdditionalInformation($infoInstance, $this->getOrderResponse);
-            $infoInstance->setAdditionalInformation($paymentAdditionalInfo);
+            //$paymentAdditionalInfo = $this->getPaymentAdditionalInformation($infoInstance, $this->getOrderResponse);
+            //$infoInstance->setAdditionalInformation($paymentAdditionalInfo);
 
-            $this->transactionModel->saveTransactionInformation($order, $infoInstance, $referenceKey, $this->getOrderResponse);
+            if ($this->getOrderResponse->charges) {
+                foreach ($this->getOrderResponse->charges as $charge) {
+                    $this->transactionModel->saveTransactionInformation($order, $infoInstance, $referenceKey, $charge);
+                }
+            }
         } catch (\Exception $e) {
             $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
             Mage::getSingleton('checkout/session')->setErrorMessage("<ul><li>" . $e->getMessage() . "</li></ul>");
@@ -576,11 +583,11 @@ class PagarMe_Creditcard_Model_Creditcard extends PagarMe_Core_Model_AbstractPay
         $transactionModel = Mage::getModel('pagarme_core/service_transaction');
 
         try {
-            $this->getOrderResponse = $transactionModel->getTransactionById($transactionId);
+            $transactionId = $transactionModel->getTransactionById($transactionId);
 
             $this->getOrderResponse = $this->sdk->transactions()
                 ->capture([
-                    'id' => $this->getOrderResponse,
+                    'id' => $transactionId,
                     'amount' => $integerAmount
                 ]);
 

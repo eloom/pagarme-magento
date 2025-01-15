@@ -1,13 +1,15 @@
 <?php
 
-class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controller_Front_Action {
+class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controller_Front_Action
+{
 
     private $logger;
 
     /**
      * Initialize resource model
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
         parent::_construct();
     }
@@ -30,18 +32,18 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
 
         $data = $this->getRequest()->getPost();
 
-        $this->logger->info(sprintf("Processando notificação. Transação [%s] - Status [%s].", $data['id'], $data['current_status']));
+        $this->logger->info(sprintf("Processando notificação. Transação [%s] - Status [%s].", $data['id'], $data['status']));
 
         $transactionId = $data['id'];
-        $currentStatus = $data['current_status'];
-        $oldStatus = $data['old_status'];
+        $currentStatus = $data['status'];
+        $type = $data['type'];
 
         try {
             Mage::getModel('pagarme_core/postback')
                 ->processPostback(
                     $transactionId,
                     $currentStatus,
-                    $oldStatus
+                    $type
                 );
             return $this->getResponse()->setBody('ok');
         } catch (PagarMe_Core_Model_PostbackHandler_Exception $e) {
@@ -70,12 +72,13 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
      */
     protected function isValidRequest(
         Mage_Core_Controller_Request_Http $request
-    ) {
+    )
+    {
         if ($request->getPost('id') == null) {
             return false;
         }
 
-        if ($request->getPost('current_status') == null) {
+        if ($request->getPost('status') == null) {
             return false;
         }
 
@@ -100,8 +103,9 @@ class PagarMe_Core_Transaction_NotificationController extends Mage_Core_Controll
      */
     protected function isAuthenticRequest(
         Mage_Core_Controller_Request_Http $request,
-        $signature
-    ) {
+                                          $signature
+    )
+    {
         return Mage::getModel('pagarme_core/sdk_adapter')->getSdk()
             ->postbacks()
             ->validate($request->getRawBody(), $signature);

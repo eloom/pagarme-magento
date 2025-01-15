@@ -85,6 +85,7 @@
                             <show_in_store>1</show_in_store>
                             <sort_order>2</sort_order>
                         </active>
+                        <!--
                         <payment_action translate="label">
                             <label>Payment Action</label>
                             <frontend_type>select</frontend_type>
@@ -94,6 +95,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </payment_action>
+                        -->
+                        <!--
                         <async_transaction translate="label">
                             <label>Async Transaction</label>
                             <frontend_type>select</frontend_type>
@@ -103,6 +106,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </async_transaction>
+                        -->
                         <max_installments translate="label">
                             <label>Max Installments</label>
                             <comment>Min: 1, Max: 12</comment>

@@ -48,7 +48,7 @@
         </resources>
         <payment>
             <groups>
-                <pagarmev2>Pagar.me V2</pagarmev2>
+                <pagarmev2>Pagar.me API V5</pagarmev2>
             </groups>
         </payment>
     </global>
@@ -119,7 +119,8 @@
                 <order_status>authorize</order_status>
                 <allowspecific>0</allowspecific>
                 <payment_action>authorize</payment_action>
-                <instructions><![CDATA[<p>Ao finalizar seu pedido, você verá o QR Code ou o código do PIX para efetuar o pagamento pelo aplicativo de sua instituição financeira.</p><p>O prazo para pagamento é de 2 horas.</p>]]></instructions>
+                <instructions>
+                    <![CDATA[<p>Ao finalizar seu pedido, você verá o QR Code ou o código do PIX para efetuar o pagamento pelo aplicativo de sua instituição financeira.</p><p>O prazo para pagamento é de 2 horas.</p>]]></instructions>
                 <sort_order>1</sort_order>
             </pagarme_pix>
         </payment>

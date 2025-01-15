@@ -9,7 +9,8 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
     /**
      * @return type
      */
-    public function _construct() {
+    public function _construct()
+    {
         $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
         return $this->_init('pagarme_core/transaction');
     }
@@ -34,7 +35,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
     {
         $quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
 
-        $installments = $transaction->installments;
+        $installments = $transaction->last_transaction->installments;
         $interestRate = $this->getInterestRateStoreConfig();
 
         $subtotalWithDiscount = $quote->getData()['subtotal_with_discount'];
@@ -83,6 +84,7 @@ class PagarMe_Core_Model_Transaction extends Mage_Core_Model_Abstract
         $this
             ->setReferenceKey($referenceKey)
             ->setOrderId($order->getId());
+
 
         if (!is_null($transaction)) {
             $totalAmount = Mage::helper('pagarme_core')->parseAmountToCurrency($transaction->amount);

@@ -1,9 +1,11 @@
 <?php
 
+use PagarmeCoreApiLib\PagarmeCoreApiClient;
+
 class PagarMe_Core_Model_Service_Transaction
 {
     /**
-     * @var \PagarMe\Client
+     * @var PagarmeCoreApiClient
      */
     protected $sdk;
 
@@ -23,11 +25,11 @@ class PagarMe_Core_Model_Service_Transaction
     }
 
     /**
-     * @param \PagarMe\Client $sdk
+     * @param PagarmeCoreApiClient $sdk
      *
      * @return void
      */
-    public function setSdk(\PagarMe\Client $sdk)
+    public function setSdk(PagarmeCoreApiClient $sdk)
     {
         $this->sdk = $sdk;
     }
