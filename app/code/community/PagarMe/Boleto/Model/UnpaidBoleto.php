@@ -1,115 +1,98 @@
 <?php
 
-class PagarMe_Boleto_Model_UnpaidBoleto
-{
-    private $logger;
+use PagarmeCoreApiLib\Models\GetOrderResponse;
 
-    public function __construct()
-    {
-        $this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
-    }
+class PagarMe_Boleto_Model_UnpaidBoleto {
+	private $logger;
 
-    /**
-     * Returns configured timezone on platform
-     *
-     * @return string
-     */
-    private function getCurrentTimezone()
-    {
-        return Mage::getStoreConfig('general/locale/timezone');
-    }
+	public function __construct() {
+		$this->logger = Eloom_Bootstrap_Logger::getLogger(__CLASS__);
+	}
 
-    /**
-     * Filter expired boletos
-     *
-     * @return Varien_Object
-     */
-    private function expiredBoletos()
-    {
-        $today = new DateTime(
-            'now',
-            new DateTimeZone($this->getCurrentTimezone())
-        );
-        $expiredBoletos = $today->modify('-7 days');
+	/**
+	 * Returns configured timezone on platform
+	 *
+	 * @return string
+	 */
+	private function getCurrentTimezone() {
+		return Mage::getStoreConfig('general/locale/timezone');
+	}
 
-        $boletosFilter = Mage::getModel('pagarme_core/transaction')
-            ->getCollection();
+	/**
+	 * Filter expired boletos
+	 *
+	 * @return Varien_Object
+	 */
+	private function expiredBoletos() {
+		$today = new DateTime(
+			'now',
+			new DateTimeZone($this->getCurrentTimezone())
+		);
+		$expiredBoletos = $today->modify('-7 days');
 
-        $boletosFilter->addFieldToFilter(
-            'boleto_expiration_date',
-            ['lt' => $expiredBoletos->format('Y-m-d H:i:s')]
-        );
+		$boletosFilter = Mage::getModel('pagarme_core/transaction')->getCollection();
 
-        return $boletosFilter->getItems();
-    }
+		$boletosFilter->addFieldToFilter(
+			'boleto_expiration_date',
+			['lt' => $expiredBoletos->format('Y-m-d H:i:s')]
+		);
 
-    /**
-     * Retrieve an order
-     *
-     * @param int $orderId
-     *
-     * @return Mage_Sales_Model_Order
-     */
-    private function loadOrder($orderId)
-    {
-        return Mage::getModel('sales/order')
-            ->load($orderId);
-    }
+		return $boletosFilter->getItems();
+	}
 
-    /**
-     * @param int $transactionId
-     * @return BoletoTransaction
-     */
-    private function loadBoletoTransaction($transactionId)
-    {
-        $sdk = Mage::getModel('pagarme_core/sdk_adapter')
-            ->getSdk();
+	/**
+	 * Retrieve an order
+	 *
+	 * @param int $orderId
+	 *
+	 * @return Mage_Sales_Model_Order
+	 */
+	private function loadOrder($orderId) {
+		return Mage::getModel('sales/order')->load($orderId);
+	}
 
-        return $sdk->transaction()->get($transactionId);
-    }
+	/**
+	 * @param int $orderId
+	 * @return GetOrderResponse
+	 */
+	private function loadBoletoTransaction($orderId) {
+		$sdk = Mage::getModel('pagarme_core/sdk_adapter')->getSdk();
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @param BoletoTransaction $boletoTransaction
-     */
-    private function cancelOrder(
-        Mage_Sales_Model_Order $order,
-        BoletoTransaction      $boletoTransaction
-    )
-    {
-        if (
-            $order->getState() ===
-            Mage_Sales_Model_Order::STATE_PENDING_PAYMENT
-        ) {
-            $cancelHandler = new PagarMe_Core_Model_OrderStatusHandler_UnpaidBoleto(
-                $order,
-                $boletoTransaction
-            );
+		return $sdk->getOrders()->getOrder($orderId);
+	}
 
-            $cancelHandler->handleStatus();
-        }
-    }
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @param GetOrderResponse $orderResponse
+	 */
+	private function cancelOrder(Mage_Sales_Model_Order $order, GetOrderResponse $orderResponse) {
+		if ($order->getState() === Mage_Sales_Model_Order::STATE_PENDING_PAYMENT) {
+			$cancelHandler = new PagarMe_Core_Model_OrderStatusHandler_UnpaidBoleto(
+				$order,
+				$orderResponse
+			);
 
-    /**
-     * Cancel orders from unpaid boleto
-     *
-     * @return void
-     */
-    public function cancel()
-    {
-        $expiredBoletos = $this->expiredBoletos();
+			$cancelHandler->handleStatus();
+		}
+	}
 
-        foreach ($expiredBoletos as $expiredBoleto) {
-            try {
-                $order = $this->loadOrder($expiredBoleto->getOrderId());
-                $transaction = $this->loadBoletoTransaction(
-                    $expiredBoleto->getTransactionId()
-                );
+	/**
+	 * Cancel orders from unpaid boleto
+	 *
+	 * @return void
+	 */
+	public function cancel() {
+		$expiredBoletos = $this->expiredBoletos();
 
-                $this->cancelOrder($order, $transaction);
-            } catch (\Exception $e) {
-                $this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
-            }
-        }
-    }
+		foreach ($expiredBoletos as $expiredBoleto) {
+			try {
+				$order = $this->loadOrder($expiredBoleto->getOrderId());
+				$orderResponse = $this->loadBoletoTransaction($expiredBoleto->getTransactionId());
+
+				$this->cancelOrder($order, $orderResponse);
+			} catch (\Exception $e) {
+				$this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
+			}
+		}
+	}
 }

@@ -1,28 +1,25 @@
 <?php
 
-abstract class PagarMe_Core_Model_OrderStatusHandler_Base
-{
-    /**
-     * @var Mage_Sales_Model_Order
-     */
-    protected $order;
+use PagarmeCoreApiLib\Models\GetOrderResponse;
 
-    /**
-     * @var stdClass
-     */
-    protected $transaction;
+abstract class PagarMe_Core_Model_OrderStatusHandler_Base {
+	/**
+	 * @var Mage_Sales_Model_Order
+	 */
+	protected $order;
 
-    public function __construct(
-        Mage_Sales_Model_Order $order,
-        stdClass               $transaction
-    )
-    {
-        $this->order = $order;
-        $this->transaction = $transaction;
-    }
+	/**
+	 * @var GetOrderResponse
+	 */
+	protected $getOrderResponse;
 
-    /**
-     * Responsible to handle order status based on transaction status
-     */
-    abstract public function handleStatus();
+	public function __construct(Mage_Sales_Model_Order $order, GetOrderResponse $getOrderResponse) {
+		$this->order = $order;
+		$this->getOrderResponse = $getOrderResponse;
+	}
+
+	/**
+	 * Responsible to handle order status based on transaction status
+	 */
+	abstract public function handleStatus();
 }
