@@ -3,6 +3,7 @@
 use PagarmeCoreApiLib\Models\GetOrderResponse;
 
 abstract class PagarMe_Core_Model_OrderStatusHandler_Base {
+
 	/**
 	 * @var Mage_Sales_Model_Order
 	 */
