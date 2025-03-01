@@ -1,44 +1,41 @@
 <?php
 
-abstract class PagarMe_Core_Model_AbstractPaymentMethod extends Mage_Payment_Model_Method_Abstract
-{
-    use PagarMe_Core_Trait_ConfigurationsAccessor;
+abstract class PagarMe_Core_Model_AbstractPaymentMethod extends Mage_Payment_Model_Method_Abstract {
+	use PagarMe_Core_Trait_ConfigurationsAccessor;
 
-    protected $_isInitializeNeeded = true;
-    
-    /**
-     * Returns payment method code for postback route
-     *
-     * @return string
-     */
-    abstract protected function getPostbackCode();
+	protected $_isInitializeNeeded = true;
 
-    /**
-     * @codeCoverageIgnore
-     * @return string
-     */
-    protected function getUrlForPostback()
-    {
-        $postbackUrl = Mage::getBaseUrl();
-        $developmentPostbackUrl = $this->getDevelopmentPostbackUrl();
+	/**
+	 * Returns payment method code for postback route
+	 *
+	 * @return string
+	 */
+	abstract protected function getPostbackCode();
 
-        if ($this->isDeveloperModeEnabled() && $developmentPostbackUrl !== '') {
-            $postbackUrl = $developmentPostbackUrl;
-        }
+	/**
+	 * @codeCoverageIgnore
+	 * @return string
+	 */
+	protected function getUrlForPostback() {
+		$postbackUrl = Mage::getBaseUrl();
+		$developmentPostbackUrl = $this->getDevelopmentPostbackUrl();
 
-        $postbackUrl .=  sprintf(
-            'pagarme_core/%s/postback',
-            $this->getPostbackCode()
-        );
+		if ($this->isDeveloperModeEnabled() && $developmentPostbackUrl !== '') {
+			$postbackUrl = $developmentPostbackUrl;
+		}
 
-        return $postbackUrl;
-    }
+		$postbackUrl .= sprintf(
+			'pagarme_core/%s/postback',
+			$this->getPostbackCode()
+		);
 
-    /**
-     * @return string
-     */
-    public function getCode()
-    {
-        return $this->_code;
-    }
+		return $postbackUrl;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCode() {
+		return $this->_code;
+	}
 }

@@ -1,61 +1,53 @@
 <?php
 
-trait PagarMe_Core_Block_Info_Trait
-{
-    /**
-     * @codeCoverageIgnore
-     *
-     * @return ArrayObject
-     * @throws \Exception
-     */
-    public function getTransaction()
-    {
-        if (!is_null($this->transaction)) {
-            return $this->transaction;
-        }
+use PagarmeCoreApiLib\Models\GetOrderResponse;
 
-        $transactionId = $this->getTransactionIdFromDb();
-        $this->transaction = $this->fetchPagarmeTransactionFromAPi(
-            $transactionId
-        );
+trait PagarMe_Core_Block_Info_Trait {
+	/**
+	 * @codeCoverageIgnore
+	 *
+	 * @return GetOrderResponse
+	 * @throws \Exception
+	 */
+	public function getTransaction() {
+		if (!is_null($this->transaction)) {
+			return $this->transaction;
+		}
 
-        return $this->transaction;
-    }
+		$transactionId = $this->getOrderIdFromDb();
+		$this->transaction = $this->fetchPagarmeOrderFromAPi($transactionId);
 
-    /**
-     * Retrieve transaction_id from database
-     *
-     * @return int
-     * @throws \Exception
-     */
-    private function getTransactionIdFromDb()
-    {
-        $order = $this->getInfo()->getOrder();
+		return $this->transaction;
+	}
 
-        if (is_null($order)) {
-            throw new \Exception('Order doesn\'t exist');
-        }
+	/**
+	 * Retrieve transaction_id from database
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
+	private function getOrderIdFromDb() {
+		$order = $this->getInfo()->getOrder();
 
-        $pagarmeInfosRelated = \Mage::getModel('pagarme_core/service_order')
-            ->getInfosRelatedByOrderId(
-                $order->getId()
-            );
+		if (is_null($order)) {
+			throw new \Exception('Order doesn\'t exist');
+		}
 
-        return $pagarmeInfosRelated->getTransactionId();
-    }
+		$pagarmeInfosRelated = \Mage::getModel('pagarme_core/service_order')->getInfosRelatedByOrderId($order->getId());
 
-    /**
-     * Fetch transaction's information from API
-     *
-     * @param int $transactionId
-     *
-     * @return ArrayObject
-     */
-    private function fetchPagarmeTransactionFromAPi($transactionId)
-    {
-        return \Mage::getModel('pagarme_core/sdk_adapter')
-            ->getSdk()
-            ->transactions()
-            ->get(['id' => $transactionId]);
-    }
+		return $pagarmeInfosRelated->getTransactionId();
+	}
+
+	/**
+	 * Fetch order's information from API
+	 *
+	 * @param int $orderId
+	 *
+	 * @return GetOrderResponse
+	 */
+	private function fetchPagarmeOrderFromAPi($orderId) {
+		return \Mage::getModel('pagarme_core/sdk_adapter')
+			->getSdk()
+			->getOrder($orderId);
+	}
 }

@@ -1,220 +1,209 @@
 <?php
 
-class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract
-{
-    const POSTBACK_STATUS_PAID = 'paid';
-    const POSTBACK_STATUS_REFUNDED = 'refunded';
-    const POSTBACK_STATUS_AUTHORIZED = 'authorized';
-    const POSTBACK_STATUS_REFUSED = 'refused';
-    const POSTBACK_STATUS_ANALYZING = 'analyzing';
+class PagarMe_Core_Model_Postback extends Mage_Core_Model_Abstract {
+	const POSTBACK_STATUS_PAID = 'paid';
+	const POSTBACK_STATUS_REFUNDED = 'refunded';
+	const POSTBACK_STATUS_AUTHORIZED = 'authorized';
+	const POSTBACK_STATUS_REFUSED = 'refused';
+	const POSTBACK_STATUS_ANALYZING = 'analyzing';
 
-    /**
-     * @var PagarMe_Core_Model_Service_Order
-     */
-    protected $orderService;
+	/**
+	 * @var PagarMe_Core_Model_Service_Order
+	 */
+	protected $orderService;
 
-    /**
-     * @var PagarMe_Core_Model_Service_Invoice
-     */
-    protected $invoiceService;
+	/**
+	 * @var PagarMe_Core_Model_Service_Invoice
+	 */
+	protected $invoiceService;
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @param string $currentStatus
-     *
-     * @return bool
-     */
-    public function canProceedWithPostback(Mage_Sales_Model_Order $order, $currentStatus)
-    {
-        if ($order->canInvoice() && $currentStatus == self::POSTBACK_STATUS_PAID) {
-            return true;
-        }
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @param string $currentStatus
+	 *
+	 * @return bool
+	 */
+	public function canProceedWithPostback(Mage_Sales_Model_Order $order, $currentStatus) {
+		if ($order->canInvoice() && $currentStatus == self::POSTBACK_STATUS_PAID) {
+			return true;
+		}
 
-        if ($currentStatus == self::POSTBACK_STATUS_REFUNDED) {
-            return true;
-        }
+		if ($currentStatus == self::POSTBACK_STATUS_REFUNDED) {
+			return true;
+		}
 
-        if ($currentStatus == self::POSTBACK_STATUS_AUTHORIZED) {
-            return true;
-        }
+		if ($currentStatus == self::POSTBACK_STATUS_AUTHORIZED) {
+			return true;
+		}
 
-        if ($currentStatus == self::POSTBACK_STATUS_REFUSED) {
-            return true;
-        }
+		if ($currentStatus == self::POSTBACK_STATUS_REFUSED) {
+			return true;
+		}
 
-        if ($currentStatus == self::POSTBACK_STATUS_ANALYZING) {
-            return true;
-        }
+		if ($currentStatus == self::POSTBACK_STATUS_ANALYZING) {
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * @codeCoverageIgnore
-     * @return PagarMe_Core_Model_Service_Order
-     */
-    public function getOrderService()
-    {
-        if (is_null($this->orderService)) {
-            $this->orderService = Mage::getModel('pagarme_core/service_order');
-        }
+	/**
+	 * @codeCoverageIgnore
+	 * @return PagarMe_Core_Model_Service_Order
+	 */
+	public function getOrderService() {
+		if (is_null($this->orderService)) {
+			$this->orderService = Mage::getModel('pagarme_core/service_order');
+		}
 
-        return $this->orderService;
-    }
+		return $this->orderService;
+	}
 
-    /**
-     * @codeCoverageIgnore
-     * @param PagarMe_Core_Model_Service_Order $orderService
-     * @return void
-     */
-    public function setOrderService(PagarMe_Core_Model_Service_Order $orderService)
-    {
-        $this->orderService = $orderService;
-    }
+	/**
+	 * @codeCoverageIgnore
+	 * @param PagarMe_Core_Model_Service_Order $orderService
+	 * @return void
+	 */
+	public function setOrderService(PagarMe_Core_Model_Service_Order $orderService) {
+		$this->orderService = $orderService;
+	}
 
-    /**
-     * @codeCoverageIgnore
-     * @return PagarMe_Core_Model_Service_Invoice
-     */
-    public function getInvoiceService()
-    {
-        if (is_null($this->invoiceService)) {
-            $this->invoiceService = Mage::getModel('pagarme_core/service_invoice');
-        }
+	/**
+	 * @codeCoverageIgnore
+	 * @return PagarMe_Core_Model_Service_Invoice
+	 */
+	public function getInvoiceService() {
+		if (is_null($this->invoiceService)) {
+			$this->invoiceService = Mage::getModel('pagarme_core/service_invoice');
+		}
 
-        return $this->invoiceService;
-    }
+		return $this->invoiceService;
+	}
 
-    /**
-     * @codeCoverageIgnore
-     * @param PagarMe_Core_Model_Service_Invoice $invoiceService
-     * @return void
-     */
-    public function setInvoiceService(PagarMe_Core_Model_Service_Invoice $invoiceService)
-    {
-        $this->invoiceService = $invoiceService;
-    }
+	/**
+	 * @codeCoverageIgnore
+	 * @param PagarMe_Core_Model_Service_Invoice $invoiceService
+	 * @return void
+	 */
+	public function setInvoiceService(PagarMe_Core_Model_Service_Invoice $invoiceService) {
+		$this->invoiceService = $invoiceService;
+	}
 
-    /**
-     * @param int $transactionId
-     * @param string $status
-     * @param string $type
-     *
-     * @return Mage_Sales_Model_Order
-     * @throws Exception|PagarMe_Core_Model_PostbackHandler_Exception
-     */
-    public function processPostback($transactionId, $status, $type)
-    {
-        $order = $this->getOrderService()
-            ->getOrderByTransactionId($transactionId);
+	/**
+	 * @param int $transactionId
+	 * @param string $status
+	 * @param string $type
+	 *
+	 * @return Mage_Sales_Model_Order
+	 * @throws Exception|PagarMe_Core_Model_PostbackHandler_Exception
+	 */
+	public function processPostback($transactionId, $status, $type) {
+		$order = $this->getOrderService()
+			->getOrderByTransactionId($transactionId);
 
-        $postbackHandler = PagarMe_Core_Model_PostbackHandler_Factory::createFromDesiredStatus(
-            $status,
-            $type,
-            $order,
-            $transactionId
-        );
+		$postbackHandler = PagarMe_Core_Model_PostbackHandler_Factory::createFromDesiredStatus(
+			$status,
+			$type,
+			$order,
+			$transactionId
+		);
 
-        return $postbackHandler->process();
-    }
+		return $postbackHandler->process();
+	}
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @return void
-     * @deprecated
-     * @see PagarMe_Core_Model_PostbackHandler_Paid::process()
-     *
-     */
-    public function setOrderAsPaid($order)
-    {
-        $invoice = $this->getInvoiceService()->createInvoiceFromOrder($order);
-        $invoice->register()->pay();
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @return void
+	 * @deprecated
+	 * @see PagarMe_Core_Model_PostbackHandler_Paid::process()
+	 *
+	 */
+	public function setOrderAsPaid($order) {
+		$invoice = $this->getInvoiceService()->createInvoiceFromOrder($order);
+		$invoice->register()->pay();
 
-        $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, 'pago', true);
-        $invoice->sendEmail();
+		$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true, 'pago', true);
+		$invoice->sendEmail();
 
-        Mage::getModel('core/resource_transaction')
-            ->addObject($order)
-            ->addObject($invoice)
-            ->save();
-    }
+		Mage::getModel('core/resource_transaction')
+			->addObject($order)
+			->addObject($invoice)
+			->save();
+	}
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @return void
-     * @deprecated
-     * @see PagarMe_Core_Model_PostbackHandler_Authorized::process()
-     *
-     */
-    public function setOrderAsAuthorized($order)
-    {
-        $order->setState(
-            Mage_Sales_Model_Order::STATE_PROCESSING,
-            true,
-            Mage::helper('sales')->__(
-                'Authorized amount of %s.',
-                substr('R$' . $order->getGrandTotal(), 0, -2)
-            )
-        );
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @return void
+	 * @deprecated
+	 * @see PagarMe_Core_Model_PostbackHandler_Authorized::process()
+	 *
+	 */
+	public function setOrderAsAuthorized($order) {
+		$order->setState(
+			Mage_Sales_Model_Order::STATE_PROCESSING,
+			true,
+			Mage::helper('sales')->__(
+				'Authorized amount of %s.',
+				substr('R$' . $order->getGrandTotal(), 0, -2)
+			)
+		);
 
-        $transactionSave = Mage::getModel('core/resource_transaction')
-            ->addObject($order)
-            ->save();
-    }
+		$transactionSave = Mage::getModel('core/resource_transaction')
+			->addObject($order)
+			->save();
+	}
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @return void
-     * @deprecated
-     * @see \PagarMe_Core_Model_PostbackHandler_Refunded::process()
-     *
-     */
-    public function setOrderAsRefunded($order)
-    {
-        $orderService = Mage::getModel('sales/service_order', $order);
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @return void
+	 * @deprecated
+	 * @see \PagarMe_Core_Model_PostbackHandler_Refunded::process()
+	 *
+	 */
+	public function setOrderAsRefunded($order) {
+		$orderService = Mage::getModel('sales/service_order', $order);
 
-        $invoices = [];
+		$invoices = [];
 
-        foreach ($order->getInvoiceCollection() as $invoice) {
-            if ($invoice->canRefund()) {
-                $invoices[] = $invoice;
-            }
-        }
+		foreach ($order->getInvoiceCollection() as $invoice) {
+			if ($invoice->canRefund()) {
+				$invoices[] = $invoice;
+			}
+		}
 
-        $transaction = Mage::getModel('core/resource_transaction');
+		$transaction = Mage::getModel('core/resource_transaction');
 
-        foreach ($invoices as $invoice) {
-            $creditmemo = $orderService->prepareInvoiceCreditmemo($invoice);
-            $creditmemo->setRefundRequested(true);
-            $creditmemo->setOfflineRequested(true);
-            $creditmemo->setPaymentRefundDisallowed(true)->register();
-            $transaction->addObject($creditmemo);
-        }
-        $transaction->addObject($order)->save();
-        
-        return $order;
-    }
+		foreach ($invoices as $invoice) {
+			$creditmemo = $orderService->prepareInvoiceCreditmemo($invoice);
+			$creditmemo->setRefundRequested(true);
+			$creditmemo->setOfflineRequested(true);
+			$creditmemo->setPaymentRefundDisallowed(true)->register();
+			$transaction->addObject($creditmemo);
+		}
+		$transaction->addObject($order)->save();
 
-    /**
-     * @param Mage_Sales_Model_Order $order
-     * @return void
-     * @deprecated
-     * @see \PagarMe_Core_Model_PostbackHandler_Refused::process()
-     *
-     */
-    public function setOrderAsRefused($order)
-    {
-        $transaction = Mage::getModel('core/resource_transaction');
+		return $order;
+	}
 
-        $order->setState(
-            Mage_Sales_Model_Order::STATE_CANCELED,
-            true,
-            Mage::helper('pagarme_core')->
-            __('Refused by gateway.')
-        );
+	/**
+	 * @param Mage_Sales_Model_Order $order
+	 * @return void
+	 * @deprecated
+	 * @see \PagarMe_Core_Model_PostbackHandler_Refused::process()
+	 *
+	 */
+	public function setOrderAsRefused($order) {
+		$transaction = Mage::getModel('core/resource_transaction');
 
-        $transaction->addObject($order)->save();
+		$order->setState(
+			Mage_Sales_Model_Order::STATE_CANCELED,
+			true,
+			Mage::helper('pagarme_core')->
+			__('Refused by gateway.')
+		);
 
-        return $order;
-    }
+		$transaction->addObject($order)->save();
+
+		return $order;
+	}
 }

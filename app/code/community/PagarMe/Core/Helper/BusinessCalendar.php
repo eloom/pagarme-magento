@@ -1,69 +1,65 @@
 <?php
-class PagarMe_Core_Helper_BusinessCalendar
-{
-    /**
-     * @param DateTime $date
-     *
-     * @return bool
-     */
-    public function isBusinessDay($date)
-    {
-        $weekDay = $date->format('w');
-        $isWeekend = $weekDay == '0' || $weekDay == '6';
 
-        return !$isWeekend && !$this->isHoliday($date);
-    }
+class PagarMe_Core_Helper_BusinessCalendar {
+	/**
+	 * @param DateTime $date
+	 *
+	 * @return bool
+	 */
+	public function isBusinessDay($date) {
+		$weekDay = $date->format('w');
+		$isWeekend = $weekDay == '0' || $weekDay == '6';
 
-    /**
-     * @param DateTime $date
-     * @return bool
-     */
-    public function isHoliday($date)
-    {
-        $holidayCalendar = $this->getHolidaysCalendar($date);
+		return !$isWeekend && !$this->isHoliday($date);
+	}
 
-        $isHoliday = array_filter(
-            $holidayCalendar,
-            function ($holiday) use ($date) {
-                return $holiday['date'] ==
-                    $date->format('Y-m-d');
-            }
-        );
+	/**
+	 * @param DateTime $date
+	 * @return bool
+	 */
+	public function isHoliday($date) {
+		$holidayCalendar = $this->getHolidaysCalendar($date);
 
-        return (bool)$isHoliday;
-    }
+		$isHoliday = array_filter(
+			$holidayCalendar,
+			function ($holiday) use ($date) {
+				return $holiday['date'] ==
+					$date->format('Y-m-d');
+			}
+		);
 
-    /**
-     * @param DateTime $date
-     *
-     * @return array
-     */
-    public function getHolidaysCalendar($date)
-    {
-        $holidaysSource = sprintf(
-            '%s%s%s',
-            'https://raw.githubusercontent.com/pagarme/',
-            'business-calendar/master/src/brazil/',
-            $this->getDateYear($date).'.json'
-        );
+		return (bool)$isHoliday;
+	}
 
-        $holidayClient = new GuzzleHttp\Client(
-            [
-                'uri' => $holidaysSource
-            ]
-        );
+	/**
+	 * @param DateTime $date
+	 *
+	 * @return array
+	 */
+	public function getHolidaysCalendar($date) {
+		$holidaysSource = sprintf(
+			'%s%s%s',
+			'https://raw.githubusercontent.com/pagarme/',
+			'business-calendar/master/src/brazil/',
+			$this->getDateYear($date) . '.json'
+		);
 
-        $holidaysFile = $holidayClient
-            ->get($holidaysSource)
-            ->getBody()
-            ->getContents();
+		$holidayClient = new GuzzleHttp\Client(
+			[
+				'uri' => $holidaysSource
+			]
+		);
 
-        $holidayJson = json_decode($holidaysFile, true);
-        return $holidayJson['calendar'];
-    }
+		$holidaysFile = $holidayClient
+			->get($holidaysSource)
+			->getBody()
+			->getContents();
 
-    public function getDateYear($date)
-    {
-        return $date->format('Y');
-    }
+		$holidayJson = json_decode($holidaysFile, true);
+		return $holidayJson['calendar'];
+	}
+
+	public function getDateYear($date) {
+		return $date->format('Y');
+	}
 }
