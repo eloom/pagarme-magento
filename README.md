@@ -36,9 +36,29 @@ composer require --update-no-dev magento-hackathon/magento-composer-installer:^4
 * defina "." como root dir
 
 ## Instalar SDK do Pagar.me
+
+Baixar "https://github.com/pagarme/pagarme-core-api-php" e colocar em vendor/PagarmeCoreApiLib
+
+Renomear o composer:name do "pagarme-core-api-php" para "pagarme/pagarme-core-lib-v5"
+
+Em "repositories", adicionar 
 ```
-composer require guzzlehttp/guzzle:~6.3
-composer require pagarme/pagarme-php:v4.1.2
+{
+      "type": "path",
+      "url": "./vendor/pagarme/PagarmeCoreApiLib",
+      "options": {
+        "symlink": true
+      }
+}
+```
+
+Adicionar em require
+```
+"pagarme/pagarme-core-lib-v5": "@dev"
+```
+
+```
+composer require pagarme/pagarme-core-lib-v5:@dev
 ```
 
 ## Gerando o build

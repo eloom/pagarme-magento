@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <PagarMeV5_Boleto>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <PagarMeV5_Core />
+            </depends>
+        </PagarMeV5_Boleto>
+    </modules>
+</config>

@@ -20,7 +20,7 @@
 
 1. Acesse o painel administrativo do Magento
 2. Clique em `Sistema > Configurações > Métodos de Pagamento`
-3. Encontre a sessão `PagarMe - Configurações`
+3. Encontre a sessão `PagarMeV5 - Configurações`
 4. Informe uma API KEY e uma Encryption Key
 5. Salve a configuração
 

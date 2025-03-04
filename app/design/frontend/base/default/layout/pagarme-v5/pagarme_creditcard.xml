@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <block type="core/text" name="pagarme.tokenizecard.js">
+                <action method="setText"
+                        ifconfig="payment/pagarmev5_creditcard/active">
+                    <text><![CDATA[<script src="https://checkout.pagar.me/v1/tokenizecard.js"></script>]]></text>
+                </action>
+            </block>
+        </reference>
+        <reference name="head">
+            <action method="addJs"
+                    ifconfig="payment/pagarmev5_creditcard/active">
+                <script>pagarme-v5/validateInputs.js</script>
+            </action>
+            <action method="addJs"
+                    ifconfig="payment/pagarmev5_creditcard/active">
+                <script>pagarme-v5/cardhash.js</script>
+            </action>
+            <action method="addJs"
+                    ifconfig="payment/pagarmev5_creditcard/active">
+                <script>pagarme-v5/creditcard.js</script>
+            </action>
+        </reference>
+    </default>
+    <sales_order_view>
+        <reference name="order_totals">
+            <block type="pagarmev5_creditcard/sales_RateAmount"
+                   name="pagarme_creditcard.rateamount"/>
+        </reference>
+    </sales_order_view>
+    <sales_email_order_items>
+        <reference name="order_totals">
+            <block type="pagarmev5_creditcard/sales_RateAmount"
+                   name="pagarme_creditcard.rateamount"/>
+        </reference>
+    </sales_email_order_items>
+</layout>

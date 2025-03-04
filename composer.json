@@ -1,5 +1,5 @@
 {
-  "name": "pagarme/pagarme-magento",
+  "name": "pagarme/pagarme-magento-v5",
   "description": "Magento 1 module to connect to Pagar.me payment provider with API 2 (v5)",
   "type": "magento-module",
   "homepage": "https://github.com/pagarme/pagarme-magento",
@@ -21,7 +21,7 @@
   ],
   "require": {
     "php": "~7.3",
-    "pagarme/pagarme-php": "@dev"
+    "pagarme/pagarme-core-lib-v5": "@dev"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8",
@@ -35,64 +35,64 @@
   "extra": {
     "map": [
       [
-        "app/code/community/PagarMe/*",
-        "app/code/community/PagarMe/"
+        "app/code/community/PagarMeV5V5/*",
+        "app/code/community/PagarMeV5V5/"
       ],
       [
-        "app/design/adminhtml/default/default/layout/pagarme/*",
-        "app/design/adminhtml/default/default/layout/pagarme/"
+        "app/design/adminhtml/default/default/layout/pagarme-v5/*",
+        "app/design/adminhtml/default/default/layout/pagarme-v5/"
       ],
       [
-        "app/design/adminhtml/default/default/template/pagarme/*",
-        "app/design/adminhtml/default/default/template/pagarme/"
+        "app/design/adminhtml/default/default/template/pagarme-v5/*",
+        "app/design/adminhtml/default/default/template/pagarme-v5/"
       ],
       [
-        "app/design/frontend/base/default/layout/pagarme/*",
-        "app/design/frontend/base/default/layout/pagarme/"
+        "app/design/frontend/base/default/layout/pagarme-v5/*",
+        "app/design/frontend/base/default/layout/pagarme-v5/"
       ],
       [
-        "app/design/frontend/base/default/template/pagarme/*",
-        "app/design/frontend/base/default/template/pagarme/"
+        "app/design/frontend/base/default/template/pagarme-v5/*",
+        "app/design/frontend/base/default/template/pagarme-v5/"
       ],
       [
-        "app/etc/modules/PagarMe_Boleto.xml",
-        "app/etc/modules/PagarMe_Boleto.xml"
+        "app/etc/modules/PagarMeV5_Boleto.xml",
+        "app/etc/modules/PagarMeV5_Boleto.xml"
       ],
       [
-        "app/etc/modules/PagarMe_Core.xml",
-        "app/etc/modules/PagarMe_Core.xml"
+        "app/etc/modules/PagarMeV5_Core.xml",
+        "app/etc/modules/PagarMeV5_Core.xml"
       ],
       [
-        "app/etc/modules/PagarMe_Creditcard.xml",
-        "app/etc/modules/PagarMe_Creditcard.xml"
+        "app/etc/modules/PagarMeV5_Creditcard.xml",
+        "app/etc/modules/PagarMeV5_Creditcard.xml"
       ],
       [
-        "app/etc/modules/PagarMe_Modal.xml",
-        "app/etc/modules/PagarMe_Modal.xml"
+        "app/etc/modules/PagarMeV5_Modal.xml",
+        "app/etc/modules/PagarMeV5_Modal.xml"
       ],
       [
-        "app/locale/pt_BR/PagarMe_Boleto.csv",
-        "app/locale/pt_BR/PagarMe_Boleto.csv"
+        "app/locale/pt_BR/PagarMeV5_Boleto.csv",
+        "app/locale/pt_BR/PagarMeV5_Boleto.csv"
       ],
       [
-        "app/locale/pt_BR/PagarMe_Core.csv",
-        "app/locale/pt_BR/PagarMe_Core.csv"
+        "app/locale/pt_BR/PagarMeV5_Core.csv",
+        "app/locale/pt_BR/PagarMeV5_Core.csv"
       ],
       [
-        "app/locale/pt_BR/PagarMe_Creditcard.csv",
-        "app/locale/pt_BR/PagarMe_Creditcard.csv"
+        "app/locale/pt_BR/PagarMeV5_Creditcard.csv",
+        "app/locale/pt_BR/PagarMeV5_Creditcard.csv"
       ],
       [
-        "app/locale/pt_BR/PagarMe_Pix.csv",
-        "app/locale/pt_BR/PagarMe_Pix.csv"
+        "app/locale/pt_BR/PagarMeV5_Pix.csv",
+        "app/locale/pt_BR/PagarMeV5_Pix.csv"
       ],
       [
-        "js/pagarme/*",
-        "js/pagarme/"
+        "js/pagarme-v5/*",
+        "js/pagarme-v5/"
       ],
       [
-        "skin/frontend/base/default/pagarme/*",
-        "skin/frontend/base/default/pagarme/"
+        "skin/frontend/base/default/pagarme-v5/*",
+        "skin/frontend/base/default/pagarme-v5/"
       ]
     ]
   },
