@@ -9,15 +9,15 @@ trait PagarMeV5_Core_Block_Info_Trait {
 	 * @return GetOrderResponse
 	 * @throws \Exception
 	 */
-	public function getTransaction() {
-		if (!is_null($this->transaction)) {
-			return $this->transaction;
+	public function getOrderResponse() {
+		if (!is_null($this->orderResponse)) {
+			return $this->orderResponse;
 		}
 
 		$transactionId = $this->getOrderIdFromDb();
-		$this->transaction = $this->fetchPagarmeOrderFromAPi($transactionId);
+		$this->orderResponse = $this->fetchPagarmeOrderFromAPi($transactionId);
 
-		return $this->transaction;
+		return $this->orderResponse;
 	}
 
 	/**
@@ -50,5 +50,19 @@ trait PagarMeV5_Core_Block_Info_Trait {
 			->getSdk()
 			->getOrders()
 			->getOrder($orderId);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getOrderId() {
+		return $this->getOrderResponse()->id;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTransactionId() {
+		return $this->getOrderResponse()->charges[0]->lastTransaction->id;
 	}
 }

@@ -34,7 +34,8 @@ class PagarMeV5_Core_Model_Transaction extends Mage_Core_Model_Abstract {
 	private function saveCreditCardInformation($order, $orderResponse) {
 		$quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
 
-		$installments = $orderResponse->last_transaction->installments;
+		$charge = $orderResponse->charges[0];
+		$installments = $charge->lastTransaction->installments;
 		$interestRate = $this->getInterestRateStoreConfig();
 
 		$subtotalWithDiscount = $quote->getData()['subtotal_with_discount'];
@@ -47,8 +48,7 @@ class PagarMeV5_Core_Model_Transaction extends Mage_Core_Model_Abstract {
 
 		$order->setInterestAmount($rateAmount);
 
-		$this
-			->setInstallments($installments)
+		$this->setInstallments($installments)
 			->setInterestRate($interestRate)
 			->setRateAmount($rateAmount);
 	}

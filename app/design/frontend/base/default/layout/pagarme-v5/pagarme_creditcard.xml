@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <layout>
     <default>
+        <!--
         <reference name="head">
             <block type="core/text" name="pagarme.tokenizecard.js">
                 <action method="setText"
@@ -9,6 +10,7 @@
                 </action>
             </block>
         </reference>
+        -->
         <reference name="head">
             <action method="addJs"
                     ifconfig="payment/pagarmev5_creditcard/active">

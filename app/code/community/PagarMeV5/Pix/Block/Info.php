@@ -9,19 +9,11 @@ class PagarMeV5_Pix_Block_Info extends Mage_Payment_Block_Info {
 	}
 
 	/**
-	 * @return int
-	 * @throws Exception
-	 */
-	public function transactionId() {
-		return $this->getTransaction()->id;
-	}
-
-	/**
 	 * @return string
 	 * @throws Exception
 	 */
 	public function getQrCode() {
-		return $this->getTransaction()->pix_qr_code;
+		return $this->getOrderResponse()->charges[0]->lastTransaction->pix_qr_code;
 	}
 
 	/**
@@ -31,7 +23,7 @@ class PagarMeV5_Pix_Block_Info extends Mage_Payment_Block_Info {
 	 */
 	public function renderView() {
 		try {
-			$this->getTransaction();
+			$this->getOrderResponse();
 		} catch (\Exception $exception) {
 
 		}

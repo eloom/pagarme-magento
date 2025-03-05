@@ -1,12 +1,8 @@
 <?php
 
 class PagarMeV5_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc {
-	use PagarMeV5_Core_Block_Info_Trait;
 
-	/**
-	 * @var stdClass
-	 */
-	private $transaction;
+	use PagarMeV5_Core_Block_Info_Trait;
 
 	public function __construct() {
 		parent::__construct();
@@ -16,37 +12,22 @@ class PagarMeV5_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc {
 	/**
 	 * @return string
 	 */
-	public function transactionInstallments() {
-		return $this->transaction->installments;
+	public function getInstallments() {
+		return $this->getOrderResponse()->charges[0]->lastTransaction->installments;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function transactionCustomerName() {
-		$this->transaction = $this->getTransaction();
-		return $this->transaction->customer->name;
+	public function getCardHolderName() {
+		return $this->getOrderResponse()->charges[0]->lastTransaction->card->holderName;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function transactionCardHolderName() {
-		return $this->transaction->card->holder_name;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function transactionCardBrand() {
-		return $this->transaction->card->brand;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function transactionId() {
-		return $this->transaction->id;
+	public function getCardBrand() {
+		return $this->getOrderResponse()->charges[0]->lastTransaction->card->brand;
 	}
 
 	/**
@@ -56,7 +37,7 @@ class PagarMeV5_Creditcard_Block_Info extends Mage_Payment_Block_Info_Cc {
 	 */
 	public function renderView() {
 		try {
-			$this->getTransaction();
+			$this->getOrderResponse();
 		} catch (\Exception $exception) {
 		}
 

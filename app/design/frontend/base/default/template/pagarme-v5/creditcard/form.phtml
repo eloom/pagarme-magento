@@ -3,9 +3,10 @@
     $helper = Mage::helper('pagarmev5_creditcard');
 ?>
 
-<div class="form-list" id="payment_form_<?= $_code ?>" style="display: none;">
-    <input type="hidden" value="" name="payment[card_hash]" id="pagarme_card_hash" class="required_entry" />
-    <input type="hidden" id="data-pagarmecheckout-app-id" value="<?= $this->getPublicKey(); ?>">
+<div class="form-list"
+     id="payment_form_<?= $_code ?>"
+     style="display: none;"
+     data-pagarmecheckout-form>
     <div class="card-data">
         <div class="card-wrapper"></div>
         <ul>
@@ -20,8 +21,8 @@
                         title="<?= $helper->__('Credit Card Number') ?>"
                         class="input-text required-entry validate-alphanum-with-spaces validate-card-number-length"
                         maxlength="23"
-                        value=""
-                    />
+                        name="payment[cc-number]"
+                        data-pagarmecheckout-element="number"/>
                 </div>
             </li>
             <li>
@@ -35,8 +36,7 @@
                         placeholder="<?= $helper->__('Name in credit card') ?>"
                         title="<?= $helper->__('Credit Card Owner') ?>"
                         class="input-text required-entry validate-alphanum-with-spaces validate-card-holder-length"
-                        value=""
-                    />
+                        name="payment[cc-holder-name]"/>
                 </div>
             </li>
             <li>
@@ -51,8 +51,7 @@
                         placeholder="MM / AA"
                         class="input-text required-entry validate-card-expiration-date"
                         maxlength="7"
-                        value=""
-                    />
+                        name="payment[cc-exp-date]"/>
                 </div>
             </li>
             <li>
@@ -66,8 +65,7 @@
                         title="<?= $helper->__('Credit Card Verification Number') ?>"
                         class="input-text required-entry validate-digits validate-cvv-length"
                         maxlength="4"
-                        value=""
-                    />
+                        name="payment[cc-cvv]"/>
                 </div>
             </li>
             <li>
@@ -76,11 +74,10 @@
                 </label>
                 <div class="input-box">
                     <select
-                        name="payment[installments]"
+                        name="payment[cc-installments]"
                         id="<?= $_code ?>_creditcard_installments"
                         title="<?= $helper->__('Installments') ?>"
-                        class="input-text required-entry validate-installments"
-                    >
+                        class="input-text required-entry validate-installments">
                     <option value="0">
                       <?= Mage::helper('pagarmev5_core')->__('Please, select the number of installments'); ?>
                     </option>
@@ -133,7 +130,10 @@
   let card;
 
   const findParentForm = node => {
-    if (node.tagName === 'FORM') return node;
+    if (node.tagName === 'FORM') {
+        //node.
+        return node;
+    }
 
     return findParentForm(node.parentNode);
   }
@@ -142,7 +142,7 @@
   const checkoutForm = findParentForm(paymentDiv);
 
   if (!generateCardHashEvent) {
-    checkoutForm.addEventListener('input', tryGenerateCardHash);
+    //checkoutForm.addEventListener('input', tryGenerateCardHash);
 
     generateCardHashEvent = true
   }
@@ -171,7 +171,7 @@
             numberInput: 'input[id="pagarmev5_creditcard_creditcard_number"]',
             expiryInput: 'input[id="pagarmev5_creditcard_creditcard_expiration_date"]',
             cvcInput: 'input[id="pagarmev5_creditcard_creditcard_cvv"]',
-            nameInput: 'input[id="pagarmev5_creditcard_creditcard_owner"]',
+            nameInput: 'input[id="pagarmev5_creditcard_creditcard_owner"]'
         },
 
         formatting: true,

@@ -7,7 +7,18 @@ const clearHash = () => {
 }
 
 const generateHash = (card) => {
-  const encryptionKey = get('#pagarmecheckout-app-id').value
+  function success(data) {
+    console.log(data);
+    return true;
+  }
+
+  function fail(error) {
+    console.error(error);
+  }
+
+  PagarmeCheckout.init(success,fail);
+  /*
+  const encryptionKey = get('#data-pagarmecheckout-app-id').value
   return pagarme.client.connect({
       encryption_key: encryptionKey
     })
@@ -15,4 +26,5 @@ const generateHash = (card) => {
     .then((cardHash) => {
       get('#pagarme_card_hash').value = cardHash
     })
+   */
 }

@@ -22,7 +22,7 @@ trait PagarMeV5_Core_Trait_ConfigurationsAccessor {
 	 * @return string
 	 */
 	private function getDevelopmentPostbackUrl() {
-		$devPostbackUrl = trim(Mage::getStoreConfig('payment/pagarme-v5/dev_custom_postback_url'));
+		$devPostbackUrl = trim(Mage::getStoreConfig('payment/pagarmev5/dev_custom_postback_url'));
 
 		if (!filter_var($devPostbackUrl, FILTER_VALIDATE_URL)) {
 			return '';
@@ -53,7 +53,7 @@ trait PagarMeV5_Core_Trait_ConfigurationsAccessor {
 	 * @return string
 	 */
 	public function getPublicKey() {
-		return trim(Mage::getStoreConfig('payment/pagarme-v5/public_key'));
+		return trim(Mage::getStoreConfig('payment/pagarmev5/public_key'));
 	}
 
 	/**

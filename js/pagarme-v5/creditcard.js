@@ -52,13 +52,15 @@ const shouldGenerateCardHash = (card) => {
     return false;
   }
 
+  /*
   const cardValidations = pagarme.validate({
     card
   });
-
   const { card_holder_name, card_cvv } = cardValidations.card;
 
   return card_holder_name && card_cvv && isValidCardExpirationDate();
+   */
+  return isValidCardExpirationDate();
 }
 
 const tryGenerateCardHash = debounce(() => {

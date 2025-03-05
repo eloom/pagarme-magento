@@ -10,19 +10,11 @@ class PagarMeV5_Boleto_Block_Info extends Mage_Payment_Block_Info {
 	}
 
 	/**
-	 * @return int
-	 * @throws Exception
-	 */
-	public function transactionId() {
-		return $this->getTransaction()->id;
-	}
-
-	/**
 	 * @return string
 	 * @throws Exception
 	 */
 	public function getBoletoUrl() {
-		return $this->getTransaction()->charges[0]->lastTransaction->url;
+		return $this->getOrderResponse()->charges[0]->lastTransaction->url;
 	}
 
 	/**
@@ -32,7 +24,7 @@ class PagarMeV5_Boleto_Block_Info extends Mage_Payment_Block_Info {
 	 */
 	public function renderView() {
 		try {
-			$this->getTransaction();
+			$this->getOrderResponse();
 		} catch (\Exception $exception) {
 		}
 

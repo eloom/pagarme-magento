@@ -2,7 +2,6 @@
 
 use PagarMeV5_Core_Model_System_Config_Source_PaymentAction as PaymentActionConfig;
 use PagarMeV5_Creditcard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
-use PagarMeV5_Creditcard_Model_Exception_TransactionsInstallmentsDivergent as TransactionsInstallmentsDivergent;
 use PagarmeCoreApiLib\Models\CreateAddressRequest;
 use PagarmeCoreApiLib\Models\CreateCreditCardPaymentRequest;
 use PagarmeCoreApiLib\Models\CreateOrderItemRequest;
@@ -10,6 +9,7 @@ use PagarmeCoreApiLib\Models\CreateOrderRequest;
 use PagarmeCoreApiLib\Models\CreatePaymentRequest;
 use PagarmeCoreApiLib\Models\CreateShippingRequest;
 use PagarmeCoreApiLib\Models\GetOrderResponse;
+use PagarmeCoreApiLib\Models\CreateCardRequest;
 use PagarmeCoreApiLib\PagarmeCoreApiClient;
 
 class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_AbstractPaymentMethod {
@@ -190,8 +190,13 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 	 */
 	public function assignData($data) {
 		$additionalInfoData = [
-			'card_hash' => $data['card_hash'],
-			'installments' => $data['installments']
+			'card_hash' => $data['cc-hash'],
+			'card_number' => $data['cc-number'],
+			'card_holder_name' => $data['cc-holder-name'],
+			'card_exp_month' => trim(explode("/", $data['cc-exp-date'])[0]),
+			'card_exp_year' => trim(explode("/", $data['cc-exp-date'])[1]),
+			'card_cvv' => $data['cc-cvv'],
+			'card_installments' => $data['cc-installments']
 		];
 		$info = $this->getInfoInstance();
 		$info->setAdditionalInformation($additionalInfoData);
@@ -250,21 +255,6 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 			return $card;
 		} catch (\Exception $e) {
 			$this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
-		}
-	}
-
-	/**
-	 * @param int $installments
-	 * @return void
-	 * @throws TransactionsInstallmentsDivergent
-	 */
-	// FIXME: remove essa checagem
-	public function checkInstallments($installments) {
-		if ($this->getOrderResponse->installments != $installments) {
-			$message = $this->pagarmeCoreHelper->__(
-				'Installments is Diverging'
-			);
-			throw new TransactionsInstallmentsDivergent($message);
 		}
 	}
 
@@ -441,8 +431,7 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 		$order = $payment->getOrder();
 		$order->setCapture($paymentActionConfig);
 		$referenceKey = $this->getReferenceKey();
-		$cardHash = $infoInstance->getAdditionalInformation('card_hash');
-		$installments = (int)$infoInstance->getAdditionalInformation('installments');
+		$installments = (int)$infoInstance->getAdditionalInformation('card_installments');
 
 		$billingAddress = $order->getBillingAddress();
 		$shippingAddress = null;
@@ -453,7 +442,7 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 		}
 
 		try {
-			$helper = Mage::helper('eloombootstrap');
+			//$helper = Mage::helper('eloombootstrap');
 
 			$this->isInstallmentsValid($installments);
 			//$card = $this->generateCard($cardHash); // FIXME: rever
@@ -479,24 +468,33 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 
 			$items = $this->pagarmeCoreHelper->prepareOrderItems($order);
 
+			$billingAddressRequest = $this->pagarmeCoreHelper->prepareAddressData($billingAddress);
+			$cardRequest = new CreateCardRequest();
+			$cardRequest->number = $infoInstance->getAdditionalInformation('card_number');
+			$cardRequest->holderName = $infoInstance->getAdditionalInformation('card_holder_name');
+			$cardRequest->expMonth = $infoInstance->getAdditionalInformation('card_exp_month');
+			$cardRequest->expYear = $infoInstance->getAdditionalInformation('card_exp_year');
+			$cardRequest->cvv = $infoInstance->getAdditionalInformation('card_cvv');
+			$cardRequest->billingAddress = $billingAddressRequest;
+
 			$creditCardPayment = new CreateCreditCardPaymentRequest();
 			$creditCardPayment->operationType = 'auth_and_capture';
 			$creditCardPayment->installments = $installments;
-			$creditCardPayment->cardToken = $cardHash;
+			$creditCardPayment->card = $cardRequest;
+			//$creditCardPayment->cardToken = $infoInstance->getAdditionalInformation('card_hash');
 
 			$paymentRequest = new CreatePaymentRequest();
 			$paymentRequest->paymentMethod = 'credit_card';
 			$paymentRequest->amount = $amount;
 			$paymentRequest->creditCard = $creditCardPayment;
 
-			$addressRequest = $this->pagarmeCoreHelper->prepareAddressData($shippingAddress);
-
+			$shippingAddressRequest = $this->pagarmeCoreHelper->prepareAddressData($shippingAddress);
 			$shippingRequest = new CreateShippingRequest();
 			$shippingRequest->amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getShippingAmount());
 			$shippingRequest->description = $order->getShippingDescription();
 			$shippingRequest->recipientName = $customerName;
 			$shippingRequest->recipientPhone = $customerPhoneDdd . $customerPhoneNumber;
-			$shippingRequest->address = $addressRequest;
+			$shippingRequest->address = $shippingAddressRequest;
 
 			$orderRequest = new CreateOrderRequest();
 			$orderRequest->code = $order->getIncrementId();
@@ -508,11 +506,11 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 			$orderRequest->payments = [$paymentRequest];
 			$orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
+			$this->logger->info($orderRequest);
 			$this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
 			$this->logger->info('Criou pedido ' . $this->getOrderResponse->id);
 
 			$order->setPagarmeTransaction($this->getOrderResponse);
-			$this->checkInstallments($installments);
 
 			if ($this->getOrderResponse->status == 'paid') {
 				$this->createInvoice($order);

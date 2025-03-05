@@ -7,12 +7,20 @@ $helper = Mage::helper('pagarmev5_pix');
 <h3><?php echo $helper->__('Pagar.me PIX'); ?></h3>
 <table id="pagarme_order_info_payment_details">
     <tr>
+        <td>
+            <strong>
+				<?php echo $helper->__('Pagar.me Order Id'); ?>
+            </strong>
+        </td>
+        <td style="text-align:right;"><?= $this->getOrderId(); ?></td>
+    </tr>
+    <tr>
         <td class="label">
             <strong>
                 <?php echo $helper->__('Pagar.me Transaction Id');?>
             </strong>
         </td>
-        <td style="text-align:right;"><?= $this->transactionId(); ?></td>
+        <td style="text-align:right;"><?= $this->getTransactionId(); ?></td>
     </tr>
     <tr>
         <td class="label">
