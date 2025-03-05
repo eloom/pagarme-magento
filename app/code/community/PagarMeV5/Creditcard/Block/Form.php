@@ -36,8 +36,6 @@ class PagarMeV5_Creditcard_Block_Form extends Mage_Payment_Block_Form_Cc {
 	public function getMaxInstallmentsByMinimumAmount($orderTotal) {
 		$minInstallmentAmount = $this->getMinInstallmentValueStoreConfig();
 
-		//$maxInstallmentsConfig = $this->getMaxInstallmentStoreConfig();
-
 		if ($minInstallmentAmount <= 0) {
 			return $this->getMaxInstallmentStoreConfig();
 		}

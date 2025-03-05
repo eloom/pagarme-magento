@@ -480,28 +480,16 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 			$items = $this->pagarmeCoreHelper->prepareOrderItems($order);
 
 			$creditCardPayment = new CreateCreditCardPaymentRequest();
-			$creditCardPayment->operation_type = 'auth_and_capture';
+			$creditCardPayment->operationType = 'auth_and_capture';
 			$creditCardPayment->installments = $installments;
-			$creditCardPayment->card_token = $cardHash;
+			$creditCardPayment->cardToken = $cardHash;
 
 			$paymentRequest = new CreatePaymentRequest();
 			$paymentRequest->paymentMethod = 'credit_card';
 			$paymentRequest->amount = $amount;
 			$paymentRequest->creditCard = $creditCardPayment;
 
-			$addressRequest = new CreateAddressRequest();
-			$addressRequest->street = $shippingAddress->getStreet(1);
-			$addressRequest->number = $shippingAddress->getStreet(2);
-			$addressRequest->zipCode = preg_replace('/\D/', '', $shippingAddress->getPostcode());
-			$addressRequest->city = $shippingAddress->getCity();
-			$addressRequest->state = $shippingAddress->getState();
-			$addressRequest->country = $shippingAddress->getCountry();
-			if (!$helper->isEmpty($shippingAddress->getStreet(4))) {
-				$addressRequest->neighborhood = $shippingAddress->getStreet(4);
-			}
-			if (!$helper->isEmpty($shippingAddress->getStreet(3))) {
-				$addressRequest->complement = $shippingAddress->getStreet(3);
-			}
+			$addressRequest = $this->pagarmeCoreHelper->prepareAddressData($shippingAddress);
 
 			$shippingRequest = new CreateShippingRequest();
 			$shippingRequest->amount = $this->pagarmeCoreHelper->parseAmountToCents($order->getShippingAmount());

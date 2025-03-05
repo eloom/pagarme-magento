@@ -170,13 +170,12 @@ class PagarMeV5_Pix_Model_Pix extends PagarMeV5_Core_Model_AbstractPaymentMethod
 				'customer_address' => $billingAddress
 			]);
 
-			$expiration = new DateTime('now + 2 hour');
 			$amount = $this->pagarmeCoreHelper->parseAmountToCents($amount);
-
 			$items = $this->pagarmeCoreHelper->prepareOrderItems($order);
 
 			$createPixPaymentRequest = new CreatePixPaymentRequest();
-			$createPixPaymentRequest->expires_at = $expiration->format('Y-m-d\TH:i:s');
+			$expiration = new DateTime('now + 4 hour');
+			$createPixPaymentRequest->expiresAt = $expiration;
 
 			$paymentRequest = new CreatePaymentRequest();
 			$paymentRequest->paymentMethod = 'pix';
@@ -203,6 +202,7 @@ class PagarMeV5_Pix_Model_Pix extends PagarMeV5_Core_Model_AbstractPaymentMethod
 			$orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
 			$this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
+
 			$this->logger->info('Criou pedido ' . $this->getOrderResponse->id);
 
 			$this->setOrderAsPendingPayment($amount, $order);
