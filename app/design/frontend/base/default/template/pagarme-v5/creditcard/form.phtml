@@ -77,7 +77,8 @@
                         name="payment[cc-installments]"
                         id="<?= $_code ?>_creditcard_installments"
                         title="<?= $helper->__('Installments') ?>"
-                        class="input-text required-entry validate-installments">
+                        class="input-text required-entry validate-installments"
+                        onchange="payment.update();">
                     <option value="0">
                       <?= Mage::helper('pagarmev5_core')->__('Please, select the number of installments'); ?>
                     </option>

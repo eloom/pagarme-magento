@@ -1,6 +1,6 @@
 <?php
 
-class PagarMeV5_Creditcard_Model_CreditmemoTotals extends Mage_Sales_Model_Order_Creditmemo_Total_Abstract {
+class PagarMeV5_Creditcard_Sales_Model_Order_Creditmemo_Total_Interest extends Mage_Sales_Model_Order_Creditmemo_Total_Abstract {
 
 	/**
 	 * @param Mage_Sales_Model_Order_Creditmemo $creditmemo

@@ -34,8 +34,6 @@
 "Refused by gateway.","Recusado pelo gateway."
 "Payment Action","Método de autorização/captura"
 "Async Transaction","Transação assíncrona"
-"Boleto discount","Desconto para boletos"
-"Boleto discount mode", "Modelo de desconto para boletos"
 "Days to boleto expire", "Dias para expiração do boleto"
 "Boleto instructions", "Instruções do boleto"
 "Payment Methods","Métodos de pagamento"

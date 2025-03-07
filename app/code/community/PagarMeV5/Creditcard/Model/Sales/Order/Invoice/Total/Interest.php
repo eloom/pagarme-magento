@@ -2,7 +2,8 @@
 
 use PagarMeV5_Creditcard_Model_Installments as Installments;
 
-class PagarMeV5_Creditcard_Model_InvoiceTotals extends Mage_Sales_Model_Order_Invoice_Total_Abstract {
+class PagarMeV5_Creditcard_Model_Sales_Order_Invoice_Total_Interest extends Mage_Sales_Model_Order_Invoice_Total_Abstract {
+
 	use PagarMeV5_Core_Trait_ConfigurationsAccessor;
 
 	/**

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Modulo PayU" basedir=".">
+<project name="Modulo PagarmeV5" basedir=".">
   <property file="${basedir}/build.properties"/>
 
   <echo>--------------------------------Modulo PagarMeV5--------------------------------</echo>

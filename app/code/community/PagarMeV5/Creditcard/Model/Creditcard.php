@@ -1,16 +1,16 @@
 <?php
 
-use PagarMeV5_Core_Model_System_Config_Source_PaymentAction as PaymentActionConfig;
-use PagarMeV5_Creditcard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
 use PagarmeCoreApiLib\Models\CreateAddressRequest;
+use PagarmeCoreApiLib\Models\CreateCardRequest;
 use PagarmeCoreApiLib\Models\CreateCreditCardPaymentRequest;
 use PagarmeCoreApiLib\Models\CreateOrderItemRequest;
 use PagarmeCoreApiLib\Models\CreateOrderRequest;
 use PagarmeCoreApiLib\Models\CreatePaymentRequest;
 use PagarmeCoreApiLib\Models\CreateShippingRequest;
 use PagarmeCoreApiLib\Models\GetOrderResponse;
-use PagarmeCoreApiLib\Models\CreateCardRequest;
 use PagarmeCoreApiLib\PagarmeCoreApiClient;
+use PagarMeV5_Core_Model_System_Config_Source_PaymentAction as PaymentActionConfig;
+use PagarMeV5_Creditcard_Model_Exception_InvalidInstallments as InvalidInstallmentsException;
 
 class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_AbstractPaymentMethod {
 
@@ -189,12 +189,19 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 	 * @return $this
 	 */
 	public function assignData($data) {
+		$cardExpMonth = null;
+		$cardExpYear = null;
+
+		if (isset($data['cc-exp-date'])) {
+			$cardExpMonth = trim(explode("/", $data['cc-exp-date'])[0]);
+			$cardExpYear = trim(explode("/", $data['cc-exp-date'])[1]);
+		}
+
 		$additionalInfoData = [
-			'card_hash' => $data['cc-hash'],
 			'card_number' => $data['cc-number'],
 			'card_holder_name' => $data['cc-holder-name'],
-			'card_exp_month' => trim(explode("/", $data['cc-exp-date'])[0]),
-			'card_exp_year' => trim(explode("/", $data['cc-exp-date'])[1]),
+			'card_exp_month' => $cardExpMonth,
+			'card_exp_year' => $cardExpYear,
 			'card_cvv' => $data['cc-cvv'],
 			'card_installments' => $data['cc-installments']
 		];

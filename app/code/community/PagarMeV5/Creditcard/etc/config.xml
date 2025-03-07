@@ -7,29 +7,42 @@
     </modules>
     <global>
         <sales>
-            <order_creditmemo>
-                <totals>
-                    <pagarmev5_creditcard_totals>
-                        <class>pagarmev5_creditcard/creditmemoTotals</class>
-                    </pagarmev5_creditcard_totals>
-                </totals>
-            </order_creditmemo>
-            <order_invoice>
-                <totals>
-                    <pagarmev5_creditcard_totals>
-                        <class>pagarmev5_creditcard/invoiceTotals</class>
-                    </pagarmev5_creditcard_totals>
-                </totals>
-            </order_invoice>
             <quote>
                 <totals>
-                    <pagarmev5_creditcard_interest>
+                    <pagarmev5_interest>
+                        <class>pagarmev5_creditcard/quote_address_total_interest</class>
                         <after>grand_total</after>
-                        <class>pagarmev5_creditcard/quote_address_total_creditCardInterestAmount</class>
-                    </pagarmev5_creditcard_interest>
+                    </pagarmev5_interest>
                 </totals>
             </quote>
+            <order_invoice>
+                <totals>
+                    <pagarmev5_interest>
+                        <class>pagarmev5_creditcard/sales_order_invoice_total_interest</class>
+                        <after>grand_total</after>
+                    </pagarmev5_interest>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <pagarmev5_interest>
+                        <class>pagarmev5_creditcard/sales_order_creditmemo_total_interest</class>
+                        <after>grand_total</after>
+                    </pagarmev5_interest>
+                </totals>
+            </order_creditmemo>
         </sales>
+        <fieldsets>
+            <sales_convert_quote_address>
+                <!-- Interest -->
+                <pagarmev5_interest_amount>
+                    <to_order>*</to_order>
+                </pagarmev5_interest_amount>
+                <pagarmev5_base_interest_amount>
+                    <to_order>*</to_order>
+                </pagarmev5_base_interest_amount>
+            </sales_convert_quote_address>
+        </fieldsets>
         <models>
             <pagarmev5_creditcard>
                 <class>PagarMeV5_Creditcard_Model</class>
@@ -39,6 +52,20 @@
             <pagarmev5_creditcard>
                 <class>PagarMeV5_Creditcard_Block</class>
             </pagarmev5_creditcard>
+            <adminhtml>
+                <rewrite>
+                    <sales_order_totals>Eloom_Payment_Block_Adminhtml_Sales_Order_Totals</sales_order_totals>
+                    <sales_order_invoice_totals>Eloom_Payment_Block_Adminhtml_Sales_Order_Invoice_Totals</sales_order_invoice_totals>
+                    <sales_order_creditmemo_totals>Eloom_Payment_Block_Adminhtml_Sales_Order_Creditmemo_Totals</sales_order_creditmemo_totals>
+                </rewrite>
+            </adminhtml>
+            <sales>
+                <rewrite>
+                    <order_totals>Eloom_Payment_Block_Sales_Order_Totals</order_totals>
+                    <order_invoice_totals>Eloom_Payment_Block_Sales_Order_Invoice_Totals</order_invoice_totals>
+                    <order_creditmemo_totals>Eloom_Payment_Block_Sales_Order_Creditmemo_Totals</order_creditmemo_totals>
+                </rewrite>
+            </sales>
         </blocks>
         <helpers>
             <pagarmev5_creditcard>

@@ -26,31 +26,16 @@ class PagarMeV5_Core_Model_Transaction extends Mage_Core_Model_Abstract {
 	}
 
 	/**
-	 * @param Mage_Sales_Model_Order $order
 	 * @param GetOrderResponse $orderResponse
 	 *
 	 * @return void
 	 */
-	private function saveCreditCardInformation($order, $orderResponse) {
-		$quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
-
+	private function saveCreditCardInformation($orderResponse) {
 		$charge = $orderResponse->charges[0];
 		$installments = $charge->lastTransaction->installments;
 		$interestRate = $this->getInterestRateStoreConfig();
 
-		$subtotalWithDiscount = $quote->getData()['subtotal_with_discount'];
-		$shippingAmount = $quote->getShippingAddress()->getShippingAmount();
-
-		$amountWithoutInterestRate = $shippingAmount + $subtotalWithDiscount;
-		$amountWithInterestRate = $quote->getData()['grand_total'];
-
-		$rateAmount = $amountWithInterestRate - $amountWithoutInterestRate;
-
-		$order->setInterestAmount($rateAmount);
-
-		$this->setInstallments($installments)
-			->setInterestRate($interestRate)
-			->setRateAmount($rateAmount);
+		$this->setInstallments($installments)->setInterestRate($interestRate);
 	}
 
 	/**
@@ -87,7 +72,7 @@ class PagarMeV5_Core_Model_Transaction extends Mage_Core_Model_Abstract {
 			$paymentMethod = $orderResponse->charges[0]->paymentMethod;
 
 			if ($paymentMethod == 'credit_card') {
-				$this->saveCreditCardInformation($order, $orderResponse);
+				$this->saveCreditCardInformation($orderResponse);
 			} else if ($paymentMethod == 'pix') {
 				//$this->setPixQrCode($orderResponse->pix_qr_code);
 				//$this->setPixExpirationDate($orderResponse);
