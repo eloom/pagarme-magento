@@ -21,6 +21,7 @@ class PagarMeV5_Core_Model_CurrentOrder {
 		$amount = $this->orderGrandTotalInCents();
 
 		$installments = [];
+		/*
 		for ($i = 1; $i <= $freeInstallments; $i++) {
 			$installment = new Installment($i, $amount, 0);
 			$installments[] = $installment;
@@ -30,6 +31,22 @@ class PagarMeV5_Core_Model_CurrentOrder {
 			$interest = $interestRate;
 			$interest += $interestCicle;
 			$installments[] = new Installment($i, $amount, $interest / 100);
+		}
+		*/
+
+		$j = 1;
+		while($j <= $maxInstallments) {
+			$installmentAmount = 0;
+
+			if ($j <= $freeInstallments) {
+				$installmentAmount = $amount / $j;
+				$installments[] = new Installment($j, $installmentAmount, 0);
+			} else {
+				$installmentAmount = Mage::helper('eloom_payu/math')->calculatePayment($amount, $interestRate / 100, $j);
+				$installments[] = new Installment($j, $installmentAmount, $interestRate);
+			}
+
+			$j++;
 		}
 
 		return $installments;
@@ -52,7 +69,7 @@ class PagarMeV5_Core_Model_CurrentOrder {
 	 * @return int
 	 */
 	public function orderGrandTotalInCents() {
-		$total = $this->quote->getData()['grand_total'];
+		$total = $this->quote->getBaseGrandTotal();
 
 		return Mage::helper('pagarmev5_core')->parseAmountToCents($total);
 	}

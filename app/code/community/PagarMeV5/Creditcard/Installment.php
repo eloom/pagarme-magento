@@ -75,32 +75,31 @@ class PagarMeV5_Creditcard_Installment {
 
 	/**
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getTotal() {
-		$interest = (1 + $this->interest);
-		$total = (float)$this->baseTotal * $interest;
+	public function getTotal(): float {
+		//$interest = (1 + $this->interest);
+		//$total = (float)$this->baseTotal * $interest;
+		$total = (float)$this->getBaseTotal() * $this->getInstallment();
 
 		return round($total, 2);
 	}
 
 	/**
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getValue() {
-		$total = (float)$this->getTotal() / $this->installment;
+	public function getValue(): float {
+		//$total = (float)$this->getTotal() / $this->installment;
 
-		return round($total, 2);
+		return round($this->getBaseTotal(), 2);
 	}
-
-	//base property getters
 
 	/**
 	 *
 	 * @return int
 	 */
-	public function getInstallment() {
+	public function getInstallment(): int {
 		return $this->installment;
 	}
 
