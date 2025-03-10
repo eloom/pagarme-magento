@@ -4,7 +4,7 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 
 	private $logger;
 
-	const HOOKS = ['order.canceled', 'order.paid', 'order.payment_failed'];
+	const WEBHOOKS = ['order.canceled', 'order.paid', 'order.payment_failed'];
 
 	/**
 	 * Initialize resource model
@@ -59,7 +59,7 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 	 * @return bool
 	 */
 	protected function isInvalidRequest(stdClass $body) {
-		if (!in_array($body->type, self::HOOKS)) {
+		if (!in_array($body->type, self::WEBHOOKS)) {
 			return false;
 		}
 		if ($body->data->id != null) {
