@@ -1,11 +1,6 @@
 <?php
 
 class PagarMeV5_Core_Model_Postback extends Mage_Core_Model_Abstract {
-	const POSTBACK_STATUS_PAID = 'paid';
-	const POSTBACK_STATUS_REFUNDED = 'refunded';
-	const POSTBACK_STATUS_AUTHORIZED = 'authorized';
-	const POSTBACK_STATUS_REFUSED = 'refused';
-	const POSTBACK_STATUS_ANALYZING = 'analyzing';
 
 	/**
 	 * @var PagarMeV5_Core_Model_Service_Order
@@ -16,36 +11,6 @@ class PagarMeV5_Core_Model_Postback extends Mage_Core_Model_Abstract {
 	 * @var PagarMeV5_Core_Model_Service_Invoice
 	 */
 	protected $invoiceService;
-
-	/**
-	 * @param Mage_Sales_Model_Order $order
-	 * @param string $currentStatus
-	 *
-	 * @return bool
-	 */
-	public function canProceedWithPostback(Mage_Sales_Model_Order $order, $currentStatus) {
-		if ($order->canInvoice() && $currentStatus == self::POSTBACK_STATUS_PAID) {
-			return true;
-		}
-
-		if ($currentStatus == self::POSTBACK_STATUS_REFUNDED) {
-			return true;
-		}
-
-		if ($currentStatus == self::POSTBACK_STATUS_AUTHORIZED) {
-			return true;
-		}
-
-		if ($currentStatus == self::POSTBACK_STATUS_REFUSED) {
-			return true;
-		}
-
-		if ($currentStatus == self::POSTBACK_STATUS_ANALYZING) {
-			return true;
-		}
-
-		return false;
-	}
 
 	/**
 	 * @codeCoverageIgnore

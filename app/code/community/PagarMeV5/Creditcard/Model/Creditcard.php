@@ -513,7 +513,7 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 			$orderRequest->payments = [$paymentRequest];
 			$orderRequest->metadata = $this->pagarmeCoreHelper->prepareMetadata($order, $referenceKey);
 
-			$this->logger->info($orderRequest);
+			//$this->logger->info($orderRequest);
 			$this->getOrderResponse = $this->sdk->getOrders()->createOrder($orderRequest, null);
 			$this->logger->info('Criou pedido ' . $this->getOrderResponse->id);
 

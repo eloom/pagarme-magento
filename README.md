@@ -61,6 +61,14 @@ Adicionar em require
 composer require pagarme/pagarme-core-lib-v5:@dev
 ```
 
+## Webhooks
+
+Marcar os seguintes:
+
++ order.canceled
++ order.paid
++ order.payment_failed
+
 ## Gerando o build
 
 Os projetos da élOOm utilizam o [Apache Ant](https://ant.apache.org/) para publicar o projeto nos ambientes de **desenvolvimento** e de **teste** e para gerar os pacotes para o **ambiente de produção**.

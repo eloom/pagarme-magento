@@ -4,6 +4,8 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 
 	private $logger;
 
+	const HOOKS = ['order.canceled', 'order.paid', 'order.payment_failed'];
+
 	/**
 	 * Initialize resource model
 	 */
@@ -23,40 +25,29 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 			return $this->getResponse()->setHttpResponseCode(405);
 		}
 
-		if (!$this->isValidRequest($request)) {
+		$body = json_decode($request->getRawBody(), false);
+
+		if ($this->isInvalidRequest($body)) {
 			return $this->getResponse()->setHttpResponseCode(400);
 		}
 
-		$data = $this->getRequest()->getPost();
-
-		$this->logger->info(sprintf("Processando notificação. Transação [%s] - Status [%s].", $data['id'], $data['status']));
-
-		$transactionId = $data['id'];
-		$currentStatus = $data['status'];
-		$type = $data['type'];
+		$this->logger->info(sprintf("Processando notificação. Transação [%s] - Status [%s].", $body->data->id, $body->data->status));
 
 		try {
-			Mage::getModel('pagarmev5_core/postback')
-				->processPostback(
-					$transactionId,
-					$currentStatus,
-					$type
-				);
+			Mage::getModel('pagarmev5_core/postback')->processPostback($body->data->id, $body->data->status, $body->type);
 			return $this->getResponse()->setBody('ok');
 		} catch (PagarMeV5_Core_Model_PostbackHandler_Exception $e) {
 			$this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
-			//$this->logger->fatal($e->getTraceAsString());
+			$this->logger->fatal($e->getTraceAsString());
 
-			return $this
-				->getResponse()
+			return $this->getResponse()
 				->setHttpResponseCode(200)
 				->setBody($e->getMessage());
 		} catch (Exception $e) {
 			$this->logger->fatal($e->getCode() . ' - ' . $e->getMessage());
 			//$this->logger->fatal($e->getTraceAsString());
 
-			return $this
-				->getResponse()
+			return $this->getResponse()
 				->setHttpResponseCode(500)
 				->setBody($e->getMessage());
 		}
@@ -67,17 +58,19 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 	 *
 	 * @return bool
 	 */
-	protected function isValidRequest(
-		Mage_Core_Controller_Request_Http $request
-	) {
-		if ($request->getPost('id') == null) {
+	protected function isInvalidRequest(stdClass $body) {
+		if (!in_array($body->type, self::HOOKS)) {
+			return false;
+		}
+		if ($body->data->id != null) {
 			return false;
 		}
 
-		if ($request->getPost('status') == null) {
+		if ($body->data->status != null) {
 			return false;
 		}
 
+		/*
 		$signature = $request->getHeader('X-Hub-Signature');
 
 		if ($signature == false) {
@@ -87,6 +80,7 @@ class PagarMeV5_Core_Transaction_NotificationController extends Mage_Core_Contro
 		if (!$this->isAuthenticRequest($request, $signature)) {
 			return false;
 		}
+		*/
 
 		return true;
 	}
