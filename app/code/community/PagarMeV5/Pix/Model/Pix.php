@@ -232,8 +232,8 @@ class PagarMeV5_Pix_Model_Pix extends PagarMeV5_Core_Model_AbstractPaymentMethod
 			'pagarme_transaction_id' => $transaction->id,
 			'store_order_id' => $order->getId(),
 			'store_increment_id' => $order->getIncrementId(),
-			'pagarmev5_pix_qrcode' => $transaction->pix_qr_code,
-			'pagarmev5_pix_expiration_date' => $transaction->pix_expiration_date,
+			'pagarme_pix_qrcode' => $transaction->charges[0]->lastTransaction->qrCode,
+			'pagarme_pix_expiration_date' => $transaction->charges[0]->lastTransaction->expiresAt,
 		];
 
 		return array_merge(

@@ -10,7 +10,7 @@
    <checkout_onepage_success>
         <reference name="content">
           <block type="pagarmev5_pix/success"
-                 name="pagarme_pix.success"
+                 name="pagarmev5_pix.success"
                  template="pagarme-v5/pix/success.phtml"/>
         </reference>
     </checkout_onepage_success>

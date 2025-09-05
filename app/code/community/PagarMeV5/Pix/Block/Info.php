@@ -13,7 +13,7 @@ class PagarMeV5_Pix_Block_Info extends Mage_Payment_Block_Info {
 	 * @throws Exception
 	 */
 	public function getQrCode() {
-		return $this->getOrderResponse()->charges[0]->lastTransaction->pix_qr_code;
+		return $this->getOrderResponse()->charges[0]->lastTransaction->qrCode;
 	}
 
 	/**

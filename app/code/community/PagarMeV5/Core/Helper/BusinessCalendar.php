@@ -10,7 +10,7 @@ class PagarMeV5_Core_Helper_BusinessCalendar {
 		$weekDay = $date->format('w');
 		$isWeekend = $weekDay == '0' || $weekDay == '6';
 
-		return !$isWeekend && !$this->isHoliday($date);
+		return !$isWeekend;// && !$this->isHoliday($date);
 	}
 
 	/**
