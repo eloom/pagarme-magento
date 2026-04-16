@@ -1,38 +1,26 @@
 <?php
-
 class PagarMeV5_Pix_Block_Success extends Mage_Checkout_Block_Onepage_Success {
-	/**
-	 * @var Mage_Sales_Model_Order
-	 */
-	protected $order;
 
-	/**
-	 * @codeCoverageIgnore
-	 */
-	public function getOrder() {
-		if (is_null($this->order)) {
-			$this->order = Mage::getModel('sales/order')->loadByIncrementId(
-				$this->getOrderId()
-			);
-		}
+	public function getPayment() {
+//		$orderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+//		$order = Mage::getModel('sales/order')->load($orderId);
 
-		return $this->order;
+		$order = Mage::getModel('sales/order')->loadByIncrementId(
+			$this->getOrderId()
+		);
+
+		return $order->getPayment();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isPixPayment() {
-		$order = $this->getOrder();
-		$additionalInfo = $order->getPayment()->getAdditionalInformation();
-		$paymentMethod = null;
-		if (array_key_exists('pagarme_payment_method', $additionalInfo)) {
-			$paymentMethod = $additionalInfo['pagarme_payment_method'];
-		}
-
-		if ($paymentMethod === PagarMeV5_Pix_Model_Pix::PIX) {
+		$method = $this->getPayment()->getMethodInstance()->getCode();
+		if ($method == PagarMeV5_Pix_Model_Pix::PIX) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -40,10 +28,20 @@ class PagarMeV5_Pix_Block_Success extends Mage_Checkout_Block_Onepage_Success {
 	 * @return string
 	 */
 	public function getQrCode() {
-		$order = $this->getOrder();
+		$order = Mage::getModel('sales/order')->loadByIncrementId(
+			$this->getOrderId()
+		);
+		$pagarmeInfosRelated = \Mage::getModel('pagarmev5_core/service_order')->getInfosRelatedByOrderId($order->getId());
+		$transactionId = $pagarmeInfosRelated->getTransactionId();
+		$orderResponse = $this->fetchPagarmeOrderFromAPi($transactionId);
 
-		$additionalInfo = $order->getPayment()->getAdditionalInformation();
+		return $orderResponse->charges[0]->lastTransaction->qrCode;
+	}
 
-		return $additionalInfo['pagarmev5_pix_qrcode'];
+	private function fetchPagarmeOrderFromAPi($orderId) {
+		return \Mage::getModel('pagarmev5_core/sdk_adapter')
+			->getSdk()
+			->getOrders()
+			->getOrder($orderId);
 	}
 }

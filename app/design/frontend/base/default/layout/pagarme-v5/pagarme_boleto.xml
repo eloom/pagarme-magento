@@ -10,7 +10,7 @@
    <checkout_onepage_success>
         <reference name="content">
           <block type="pagarmev5_boleto/success"
-                 name="pagarme_boleto.success"
+                 name="pagarmev5_boleto.success"
                  template="pagarme-v5/boleto/success.phtml"/>
         </reference>
     </checkout_onepage_success>   

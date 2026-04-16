@@ -359,6 +359,10 @@ class PagarMeV5_Creditcard_Model_Creditcard extends PagarMeV5_Core_Model_Abstrac
 		);
 
 		switch ($this->getOrderResponse->status) {
+			case 'pending':
+				$message = 'Pending on Gateway. Waiting response';
+				$desiredStatus = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
+				break;
 			case 'processing':
 				$message = 'Processing on Gateway. Waiting response';
 				$desiredStatus = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;

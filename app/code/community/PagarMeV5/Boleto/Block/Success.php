@@ -1,38 +1,27 @@
 <?php
 
 class PagarMeV5_Boleto_Block_Success extends Mage_Checkout_Block_Onepage_Success {
-	/**
-	 * @var Mage_Sales_Model_Order
-	 */
-	protected $order;
 
-	/**
-	 * @codeCoverageIgnore
-	 */
-	public function getOrder() {
-		if (is_null($this->order)) {
-			$this->order = Mage::getModel('sales/order')->loadByIncrementId(
-				$this->getOrderId()
-			);
-		}
+	public function getPayment() {
+		//$orderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+		//$order = Mage::getModel('sales/order')->load($orderId);
 
-		return $this->order;
+		$order = Mage::getModel('sales/order')->loadByIncrementId(
+			$this->getOrderId()
+		);
+
+		return $order->getPayment();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isBoletoPayment() {
-		$order = $this->getOrder();
-		$additionalInfo = $order->getPayment()->getAdditionalInformation();
-		$paymentMethod = null;
-		if (array_key_exists('pagarme_payment_method', $additionalInfo)) {
-			$paymentMethod = $additionalInfo['pagarme_payment_method'];
-		}
-
-		if ($paymentMethod === PagarMeV5_Boleto_Model_Boleto::BOLETO) {
+		$method = $this->getPayment()->getMethodInstance()->getCode();
+		if ($method == PagarMeV5_Boleto_Model_Boleto::BOLETO) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -40,10 +29,9 @@ class PagarMeV5_Boleto_Block_Success extends Mage_Checkout_Block_Onepage_Success
 	 * @return string
 	 */
 	public function getBoletoUrl() {
-		$order = $this->getOrder();
+		$additionalInfo = (array)$this->getPayment()->getAdditionalInformation();
 
-		$additionalInfo = $order->getPayment()->getAdditionalInformation();
-
-		return $additionalInfo['pagarme_boleto_url'];
+		//return $additionalInfo['pagarme_boleto_url'];
+		return null;
 	}
 }
