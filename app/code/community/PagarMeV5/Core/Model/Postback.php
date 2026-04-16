@@ -63,8 +63,7 @@ class PagarMeV5_Core_Model_Postback extends Mage_Core_Model_Abstract {
 	 * @throws Exception|PagarMeV5_Core_Model_PostbackHandler_Exception
 	 */
 	public function processPostback($transactionId, $status, $type) {
-		$order = $this->getOrderService()
-			->getOrderByTransactionId($transactionId);
+		$order = $this->getOrderService()->getOrderByTransactionId($transactionId);
 
 		$postbackHandler = PagarMeV5_Core_Model_PostbackHandler_Factory::createFromDesiredStatus(
 			$status,
