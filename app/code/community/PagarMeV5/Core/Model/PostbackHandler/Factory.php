@@ -42,7 +42,7 @@ class PagarMeV5_Core_Model_PostbackHandler_Factory {
       );
     }
 
-    if ($status === 'refused' || $status === 'canceled') {
+    if ($status === 'refused' || $status === 'canceled' || $status === 'failed') {
       return new PagarMeV5_Core_Model_PostbackHandler_Refused(
         $order,
         $transactionId,
